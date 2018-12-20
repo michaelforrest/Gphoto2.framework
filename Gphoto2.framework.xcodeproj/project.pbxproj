@@ -57,7 +57,6 @@
 		90A6670018184D0D00592E25 /* jpeg.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A6659B1818286E00592E25 /* jpeg.c */; };
 		90A6670818184EC200592E25 /* libgphoto2_port.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A666BB18182C0600592E25 /* libgphoto2_port.10.dylib */; };
 		90A6670918184EC200592E25 /* libltdl.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90B82A071817F0580029357C /* libltdl.7.dylib */; };
-		90A6670A18184EC200592E25 /* libusb-1.0.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90B8282B1817D56D0029357C /* libusb-1.0.16.dylib */; };
 		90A6670D18184EF500592E25 /* libgphoto2.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 90A666ED18184CBB00592E25 /* libgphoto2.6.dylib */; };
 		90A667161818505600592E25 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664B21818286D00592E25 /* config.c */; };
 		90A667181818505600592E25 /* library.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664B41818286D00592E25 /* library.c */; };
@@ -944,7 +943,6 @@
 			files = (
 				90A6670818184EC200592E25 /* libgphoto2_port.10.dylib in Frameworks */,
 				90A6670918184EC200592E25 /* libltdl.7.dylib in Frameworks */,
-				90A6670A18184EC200592E25 /* libusb-1.0.16.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
