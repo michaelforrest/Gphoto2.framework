@@ -1,6 +1,6 @@
 /** \file
  *
- * \author Copyright 2001 Lutz Müller <lutz@users.sf.net>
+ * \author Copyright 2001 Lutz Mueller <lutz@users.sf.net>
  *
  * \par License
  * This library is free software; you can redistribute it and/or
@@ -79,10 +79,11 @@ camera_abilities (CameraAbilitiesList *list)
  * meaningful error code.
  *
  * \returns a gphoto2 error code
- **/
+ *
+ /*
 int
 camera_init (Camera *camera)
 {
-	/* Dummy implementation */
 	return (GP_OK);
 }
+*/

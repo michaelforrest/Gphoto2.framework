@@ -1,6 +1,6 @@
 /** \file gphoto2-port-result.h
  *
- * Copyright © 2001 Lutz Müller <lutz@users.sf.net>
+ * Copyright 2001 Lutz Mueller <lutz@users.sf.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -119,7 +119,15 @@
  */
 #define GP_ERROR_HAL                    -70
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 const char *gp_port_result_as_string (int result);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __GPHOTO2_PORT_RESULT_H__ */
 

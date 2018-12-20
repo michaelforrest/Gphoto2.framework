@@ -1,6 +1,6 @@
 /** \file
  *
- * Copyright © 2002 Hans Ulrich Niedermann <gp@n-dimensional.de
+ * Copyright 2002 Hans Ulrich Niedermann <gp@n-dimensional.de
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,7 @@ const char **gp_port_library_version(GPVersionVerbosity verbose)
 	static const char *shrt[] =
 		{
 			PACKAGE_VERSION,
+		//	"iolibs: " IOLIB_LIST,
 #ifdef HAVE_CC
 			HAVE_CC,
 #else
@@ -40,7 +41,7 @@ const char **gp_port_library_version(GPVersionVerbosity verbose)
 #else
 			"no ltdl",
 #endif
-#ifdef HAVE_LIBUSB
+#if defined(HAVE_LIBUSB) || defined(HAVE_LIBUSB1) || defined(HAVE_LIBUSB_WIN32)
 			"USB",
 #else
 			"no USB",
@@ -66,15 +67,16 @@ const char **gp_port_library_version(GPVersionVerbosity verbose)
 	static const char *verb[] =
 		{
 			PACKAGE_VERSION,
+	//		"iolibs: " IOLIB_LIST,
 #ifdef HAVE_CC
 			HAVE_CC " (C compiler used)",
 #else
 			"unknown (C compiler used)",
 #endif
 #ifdef HAVE_LTDL
-			"ltdl (for portable loading of camlibs)",
+			"ltdl (for portable loading of iolibs)",
 #else
-			"no ltdl (for portable loading of camlibs)",
+			"no ltdl (for portable loading of iolibs)",
 #endif
 #ifdef HAVE_LIBUSB_WIN32
 			"USB (libusb-win32, for USB cameras)",

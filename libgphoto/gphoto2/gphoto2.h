@@ -1,7 +1,7 @@
 /** \file
  * \brief Convenience header for gphoto2
  *
- * \author Copyright 2001 Lutz Müller <lutz@users.sf.net>
+ * \author Copyright 2001 Lutz Mueller <lutz@users.sf.net>
  *
  * \note
  * This library is free software; you can redistribute it and/or
@@ -38,7 +38,9 @@ extern "C" {
 #endif
 
 #ifdef WIN32
+#ifndef CAMLIBS
 #define CAMLIBS "."
+#endif
 #endif
 
 #include <gphoto2/gphoto2-port.h>

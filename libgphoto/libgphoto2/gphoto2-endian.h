@@ -1,11 +1,12 @@
 /* This file is generated automatically by configure */
-/* It is valid only for the system type x86_64-apple-darwin12.5.0 */
+/* It is valid only for the system type x86_64-apple-darwin16.7.0 */
 
 #ifndef __BYTEORDER_H
 #define __BYTEORDER_H
 
 /* ntohl and relatives live here */
 #include <arpa/inet.h>
+#define __HAVE_NTOHL
 
 /* Define generic byte swapping functions */
 #include <machine/byte_order.h>
@@ -30,16 +31,32 @@
 /* Arguments to these macros must be properly aligned on natural word */
 /* boundaries in order to work properly on all architectures */
 #ifndef htobe16
-# define htobe16(x) htons(x)
+# ifdef __HAVE_NTOHL
+#  define htobe16(x) htons(x)
+# else
+#  ifdef WORDS_BIGENDIAN
+#   define htobe16(x) (x)
+#  else
+#   define htobe16(x) swap16(x)
+#  endif
+# endif
 #endif
 #ifndef htobe32
-# define htobe32(x) htonl(x)
+# ifdef __HAVE_NTOHL
+#  define htobe32(x) htonl(x)
+# else
+#  ifdef WORDS_BIGENDIAN
+#   define htobe32(x) (x)
+#  else
+#   define htobe32(x) swap32(x)
+#  endif
+# endif
 #endif
 #ifndef be16toh
-# define be16toh(x) ntohs(x)
+# define be16toh(x) htobe16(x)
 #endif
 #ifndef be32toh
-# define be32toh(x) ntohl(x)
+# define be32toh(x) htobe32(x)
 #endif
 
 #define HTOBE16(x) (x) = htobe16(x)
@@ -86,7 +103,7 @@
 #define BE64TOH(x)      (x) = be64toh(x)
 
 /* Define the C99 standard length-specific integer types */
-#include <stdint.h>
+#include <_stdint.h>
 
 /* Here are some macros to create integers from a byte array */
 /* These are used to get and put integers from/into a uint8_t array */
