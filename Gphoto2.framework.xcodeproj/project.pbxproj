@@ -40,7 +40,6 @@
 		90A666E01818472000592E25 /* libusb1.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A666A518182AF000592E25 /* libusb1.c */; };
 		90A666E11818472800592E25 /* libgphoto2_port.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A666BB18182C0600592E25 /* libgphoto2_port.10.dylib */; };
 		90A666E21818472800592E25 /* libusb-1.0.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90B8282B1817D56D0029357C /* libusb-1.0.16.dylib */; };
-		90A666E818184B1900592E25 /* usb.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 90A666DC181846DA00592E25 /* usb.dylib */; };
 		90A666F118184D0D00592E25 /* ahd_bayer.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A665891818286E00592E25 /* ahd_bayer.c */; };
 		90A666F218184D0D00592E25 /* bayer.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A6658A1818286E00592E25 /* bayer.c */; };
 		90A666F318184D0D00592E25 /* exif.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A6658C1818286E00592E25 /* exif.c */; };
@@ -65,7 +64,6 @@
 		90A6671A1818505600592E25 /* olympus-wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664B71818286D00592E25 /* olympus-wrap.c */; };
 		90A6671F1818505600592E25 /* ptp.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664BC1818286D00592E25 /* ptp.c */; };
 		90A667211818505600592E25 /* ptpip.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664BE1818286D00592E25 /* ptpip.c */; };
-		90A667221818505600592E25 /* usb.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664C41818286D00592E25 /* usb.c */; };
 		90A66727181851FD00592E25 /* libgphoto2.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A666ED18184CBB00592E25 /* libgphoto2.6.dylib */; };
 		90A667281818524F00592E25 /* libgphoto2_port.10.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A666BB18182C0600592E25 /* libgphoto2_port.10.dylib */; };
 		90A6672A1818533100592E25 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A667291818533100592E25 /* libxml2.2.dylib */; };
@@ -99,6 +97,9 @@
 		90B82A171817F0980029357C /* slist.c in Sources */ = {isa = PBXBuildFile; fileRef = 90B82A011817EFBE0029357C /* slist.c */; };
 		90B82A181817F0AB0029357C /* argz.c in Sources */ = {isa = PBXBuildFile; fileRef = 90B829C51817EFBE0029357C /* argz.c */; };
 		90B82A2D1817F8E80029357C /* libltdlS.c in Sources */ = {isa = PBXBuildFile; fileRef = 90B82A2C1817F8E80029357C /* libltdlS.c */; };
+		BE7C860B21C2DD160050BA88 /* usb.c in Sources */ = {isa = PBXBuildFile; fileRef = 90A664C41818286D00592E25 /* usb.c */; };
+		BE7C863121C2F8130050BA88 /* ptpicc.c in Sources */ = {isa = PBXBuildFile; fileRef = BE7C860921C2DCC90050BA88 /* ptpicc.c */; };
+		BEF8E4D221CB652100897C0B /* usb.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 90A666DC181846DA00592E25 /* usb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -236,7 +237,7 @@
 			dstPath = "Versions/$(FRAMEWORK_VERSION)/IOLibs";
 			dstSubfolderSpec = 1;
 			files = (
-				90A666E818184B1900592E25 /* usb.dylib in CopyFiles */,
+				BEF8E4D221CB652100897C0B /* usb.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,7 +612,6 @@
 		90A664B71818286D00592E25 /* olympus-wrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "olympus-wrap.c"; sourceTree = "<group>"; };
 		90A664B81818286D00592E25 /* olympus-wrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "olympus-wrap.h"; sourceTree = "<group>"; };
 		90A664B91818286D00592E25 /* ptp-bugs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ptp-bugs.h"; sourceTree = "<group>"; };
-		90A664BA1818286D00592E25 /* ptp-pack.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ptp-pack.c"; sourceTree = "<group>"; };
 		90A664BB1818286D00592E25 /* ptp-private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ptp-private.h"; sourceTree = "<group>"; };
 		90A664BC1818286D00592E25 /* ptp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ptp.c; sourceTree = "<group>"; };
 		90A664BD1818286D00592E25 /* ptp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ptp.h; sourceTree = "<group>"; };
@@ -910,6 +910,7 @@
 		90B82A241817F11D0029357C /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		90B82A2A1817F18F0029357C /* argz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = argz.h; sourceTree = "<group>"; };
 		90B82A2C1817F8E80029357C /* libltdlS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libltdlS.c; sourceTree = "<group>"; };
+		BE7C860921C2DCC90050BA88 /* ptpicc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptpicc.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1726,17 +1727,17 @@
 				90A664B71818286D00592E25 /* olympus-wrap.c */,
 				90A664B81818286D00592E25 /* olympus-wrap.h */,
 				90A664B91818286D00592E25 /* ptp-bugs.h */,
-				90A664BA1818286D00592E25 /* ptp-pack.c */,
 				90A664BB1818286D00592E25 /* ptp-private.h */,
 				90A664BC1818286D00592E25 /* ptp.c */,
 				90A664BD1818286D00592E25 /* ptp.h */,
+				90A664C41818286D00592E25 /* usb.c */,
+				BE7C860921C2DCC90050BA88 /* ptpicc.c */,
 				90A664BE1818286D00592E25 /* ptpip.c */,
 				90A664BF1818286D00592E25 /* ptpip.html */,
 				90A664C01818286D00592E25 /* PTPIP.TXT */,
 				90A664C11818286D00592E25 /* README.ptp2 */,
 				90A664C21818286D00592E25 /* TESTPLAN.ptp2 */,
 				90A664C31818286D00592E25 /* TODO */,
-				90A664C41818286D00592E25 /* usb.c */,
 			);
 			path = ptp2;
 			sourceTree = "<group>";
@@ -2224,6 +2225,7 @@
 				90A665881818286E00592E25 /* libgphoto2 */,
 				90B828231817D50E0029357C /* Products */,
 				90A667321818546600592E25 /* External Deps */,
+				BE2B108C21C3EC33003B5813 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2340,6 +2342,13 @@
 				90B829EA1817EFBE0029357C /* preopen.c */,
 			);
 			path = loaders;
+			sourceTree = "<group>";
+		};
+		BE2B108C21C3EC33003B5813 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2708,10 +2717,11 @@
 			files = (
 				90A667161818505600592E25 /* config.c in Sources */,
 				90A667181818505600592E25 /* library.c in Sources */,
+				BE7C860B21C2DD160050BA88 /* usb.c in Sources */,
 				90A6671A1818505600592E25 /* olympus-wrap.c in Sources */,
+				BE7C863121C2F8130050BA88 /* ptpicc.c in Sources */,
 				90A6671F1818505600592E25 /* ptp.c in Sources */,
 				90A667211818505600592E25 /* ptpip.c in Sources */,
-				90A667221818505600592E25 /* usb.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3526,6 +3536,7 @@
 				90A6666B1818291A00592E25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		90A666BC18182C0600592E25 /* Build configuration list for PBXNativeTarget "libgphoto2_port" */ = {
 			isa = XCConfigurationList;
@@ -3534,6 +3545,7 @@
 				90A666BE18182C0600592E25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		90A666DD181846DA00592E25 /* Build configuration list for PBXNativeTarget "usb" */ = {
 			isa = XCConfigurationList;
@@ -3542,6 +3554,7 @@
 				90A666DF181846DA00592E25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		90A666EE18184CBB00592E25 /* Build configuration list for PBXNativeTarget "libgphoto2" */ = {
 			isa = XCConfigurationList;
@@ -3550,6 +3563,7 @@
 				90A666F018184CBB00592E25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		90A667131818500300592E25 /* Build configuration list for PBXNativeTarget "ptp2" */ = {
 			isa = XCConfigurationList;
@@ -3567,6 +3581,7 @@
 				90ADD95D181B023E0083A15F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		90B8281B1817D43B0029357C /* Build configuration list for PBXProject "Gphoto2.framework" */ = {
 			isa = XCConfigurationList;

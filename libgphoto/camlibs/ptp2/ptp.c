@@ -153,7 +153,12 @@ ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
 	ptp->Transaction_ID=params->transaction_id++;
 	ptp->SessionID=params->session_id;
 	/* send request */
-	CHECK_PTP_RC(params->sendreq_func (params, ptp));
+
+    if (!(!params->care_about_transaction_id && (flags&PTP_DP_DATA_MASK) == PTP_DP_SENDDATA))
+    {
+        CHECK_PTP_RC(params->sendreq_func (params, ptp));
+    }
+    
 	/* is there a dataphase? */
 	switch (flags&PTP_DP_DATA_MASK) {
 	case PTP_DP_SENDDATA:
@@ -202,25 +207,28 @@ ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
 		}
 		if (ret != PTP_RC_OK)
 			return ret;
-		
-		if (ptp->Transaction_ID < params->transaction_id-1) {
-			tries++;
-			ptp_debug (params,
-				"PTP: Sequence number mismatch %d vs expected %d, suspecting old reply.",
-				ptp->Transaction_ID, params->transaction_id-1
-			);
-			continue;
-		}
-		if (ptp->Transaction_ID != params->transaction_id-1) {
-			/* try to clean up potential left overs from previous session */
-			if ((cmd == PTP_OC_OpenSession) && tries)
-				continue;
-			ptp_error (params,
-				"PTP: Sequence number mismatch %d vs expected %d.",
-				ptp->Transaction_ID, params->transaction_id-1
-			);
-			return PTP_ERROR_BADPARAM;
-		}
+
+        if (params->care_about_transaction_id)
+        {
+            if (ptp->Transaction_ID < params->transaction_id-1) {
+                tries++;
+                ptp_debug (params,
+                    "PTP: Sequence number mismatch %d vs expected %d, suspecting old reply.",
+                    ptp->Transaction_ID, params->transaction_id-1
+                );
+                continue;
+            }
+            if (ptp->Transaction_ID != params->transaction_id-1) {
+                /* try to clean up potential left overs from previous session */
+                if ((cmd == PTP_OC_OpenSession) && tries)
+                    continue;
+                ptp_error (params,
+                    "PTP: Sequence number mismatch %d vs expected %d.",
+                    ptp->Transaction_ID, params->transaction_id-1
+                );
+                return PTP_ERROR_BADPARAM;
+            }
+        }
 		break;
 	}
 	return ptp->Code;

@@ -1936,6 +1936,21 @@ camera_abilities (CameraAbilitiesList *list)
 	a.device_type       = GP_DEVICE_STILL_CAMERA;
 	CR (gp_abilities_list_append (list, a));
 
+    
+    memset(&a, 0, sizeof(a));
+    strcpy(a.model, "PTP ICC Camera");
+    a.status = GP_DRIVER_STATUS_EXPERIMENTAL;
+    a.port   = GP_PORT_PTPICC;
+    a.operations        =	GP_CAPTURE_IMAGE		|
+				GP_OPERATION_CONFIG;
+    a.file_operations   =	GP_FILE_OPERATION_PREVIEW	|
+				GP_FILE_OPERATION_DELETE;
+    a.folder_operations =	GP_FOLDER_OPERATION_PUT_FILE	|
+				GP_FOLDER_OPERATION_MAKE_DIR	|
+				GP_FOLDER_OPERATION_REMOVE_DIR;
+    a.device_type       = GP_DEVICE_STILL_CAMERA;
+    CR (gp_abilities_list_append (list, a));
+
 	return (GP_OK);
 }
 
@@ -6566,6 +6581,7 @@ camera_init (Camera *camera, GPContext *context)
 	/* Make sure our port is either USB or PTP/IP. */
 	if (	(camera->port->type != GP_PORT_USB)	&&
 		(camera->port->type != GP_PORT_PTPIP)	&&
+        (camera->port->type != GP_PORT_PTPICC)	&&
 		(camera->port->type != GP_PORT_USB_SCSI)
 	) {
 		gp_context_error (context, _("Currently, PTP is only implemented for "
@@ -6589,6 +6605,7 @@ camera_init (Camera *camera, GPContext *context)
 		return (GP_ERROR_NO_MEMORY);
 	memset (camera->pl, 0, sizeof (CameraPrivateLibrary));
 	params = &camera->pl->params;
+    params-> care_about_transaction_id = 1;
 	params->debug_func = ptp_debug_func;
 	params->error_func = ptp_error_func;
 	params->data = malloc (sizeof (PTPData));
@@ -6679,6 +6696,31 @@ camera_init (Camera *camera, GPContext *context)
 		params->event_check	= ptp_ptpip_event_check;
 		break;
 	}
+    case GP_PORT_PTPICC:
+    {
+        GPPortInfo	info;
+        char 		*xpath;
+        
+        ret = gp_port_get_info (camera->port, &info);
+        if (ret != GP_OK) {
+            gp_log (GP_LOG_ERROR, "ptpicc", "Failed to get port info?");
+            return ret;
+        }
+        gp_port_info_get_path (info, &xpath);
+        ret = ptp_ptpicc_connect (params, xpath);
+        if (ret != GP_OK) {
+            gp_log (GP_LOG_ERROR, "ptpicc", "Failed to connect.");
+            return ret;
+        }
+        params->sendreq_func	= ptp_ptpicc_sendreq;
+        params->senddata_func	= ptp_ptpicc_senddata;
+        params->getresp_func	= ptp_ptpicc_getresp;
+        params->getdata_func	= ptp_ptpicc_getdata;
+        params->event_wait	= ptp_ptpicc_event_wait;
+        params->event_check	= ptp_ptpicc_event_check;
+        params->care_about_transaction_id = 0;
+        break;
+    }
 	default:
 		break;
 	}

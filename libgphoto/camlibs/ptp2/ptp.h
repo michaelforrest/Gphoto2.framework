@@ -2277,6 +2277,7 @@ struct _PTPParams {
 
 	/* ptp transaction ID */
 	uint32_t	transaction_id;
+    int care_about_transaction_id;
 	/* ptp session ID */
 	uint32_t	session_id;
 
@@ -2367,13 +2368,23 @@ uint16_t ptp_ptpip_getdata	(PTPParams* params, PTPContainer* ptp,
 uint16_t ptp_ptpip_event_wait	(PTPParams* params, PTPContainer* event);
 uint16_t ptp_ptpip_event_check	(PTPParams* params, PTPContainer* event);
 
+int      ptp_ptpicc_connect	(PTPParams* params, const char *port);
+uint16_t ptp_ptpicc_sendreq	(PTPParams* params, PTPContainer* req);
+uint16_t ptp_ptpicc_senddata	(PTPParams* params, PTPContainer* ptp,
+                             uint64_t size, PTPDataHandler *handler);
+uint16_t ptp_ptpicc_getresp	(PTPParams* params, PTPContainer* resp);
+uint16_t ptp_ptpicc_getdata	(PTPParams* params, PTPContainer* ptp,
+                             PTPDataHandler *handler);
+uint16_t ptp_ptpicc_event_wait	(PTPParams* params, PTPContainer* event);
+uint16_t ptp_ptpicc_event_check	(PTPParams* params, PTPContainer* event);
+    
 uint16_t ptp_getdeviceinfo	(PTPParams* params, PTPDeviceInfo* deviceinfo);
 
 uint16_t ptp_generic_no_data	(PTPParams* params, uint16_t opcode, unsigned int cnt, ...);
 
 uint16_t ptp_opensession	(PTPParams *params, uint32_t session);
 
-uint16_t ptp_transaction_new (PTPParams* params, PTPContainer* ptp, 
+uint16_t ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
                 uint16_t flags, uint64_t sendlen,
                 PTPDataHandler *handler
 );
