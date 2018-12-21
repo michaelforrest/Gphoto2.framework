@@ -72,7 +72,7 @@
 uint16_t
 ptp_ptpicc_sendreq (PTPParams* params, PTPContainer* req)
 {
-    printf("ptp_ptpicc_sendreq operationCode 0x%x\n", req->Code);
+ //   printf("ptp_ptpicc_sendreq operationCode 0x%x\n", req->Code);
 	int		len = 12+req->Nparam*4;
 	unsigned char 	*request = malloc(len);
 
@@ -80,7 +80,7 @@ ptp_ptpicc_sendreq (PTPParams* params, PTPContainer* req)
     htod16a(&request[4],PTP_USB_CONTAINER_COMMAND); 
     htod16a(&request[6],req->Code);
     htod32a(&request[8],req->Transaction_ID);
-    printf("send Transaction_ID %d\n", req->Transaction_ID);
+ //   printf("send Transaction_ID %d\n", req->Transaction_ID);
 
     switch (req->Nparam) {
         case 5: htod32a(&request[28],req->Param5);
@@ -112,7 +112,7 @@ ptp_ptpicc_senddata (PTPParams* params, PTPContainer* ptp,
 		uint64_t size, PTPDataHandler *handler
 )
 {
-    printf("ptp_ptpicc_senddata operationCode 0x%x dataSize: %d\n", ptp->Code, size);
+   // printf("ptp_ptpicc_senddata operationCode 0x%x dataSize: %d\n", ptp->Code, size);
 
     int packetlen = 12+(ptp->Nparam*4);
     int		len = packetlen+size;
@@ -122,7 +122,7 @@ ptp_ptpicc_senddata (PTPParams* params, PTPContainer* ptp,
     htod16a(&request[4],PTP_USB_CONTAINER_COMMAND);
     htod16a(&request[6],ptp->Code);
     htod32a(&request[8],ptp->Transaction_ID);
-    printf("send data Transaction_ID %d\n", ptp->Transaction_ID);
+ //   printf("send data Transaction_ID %d\n", ptp->Transaction_ID);
     
     switch (ptp->Nparam) {
         case 5: htod32a(&request[28],ptp->Param5);
@@ -143,7 +143,7 @@ ptp_ptpicc_senddata (PTPParams* params, PTPContainer* ptp,
     int ret = handler->getfunc(params, handler->priv, size, request+12, &gotlen);
     if (ret != PTP_RC_OK)
         return ret;
-    printf("getfunc: %lld got: %lld\n", size, gotlen);
+ //   printf("getfunc: %lld got: %lld\n", size, gotlen);
     res = gp_port_write (camera->port, (char*)request, len);
     if (res != packetlen) {
         gp_log (GP_LOG_DEBUG, "ptpicc sendreq",
@@ -157,7 +157,7 @@ ptp_ptpicc_senddata (PTPParams* params, PTPContainer* ptp,
 uint16_t
 ptp_ptpicc_getdata (PTPParams* params, PTPContainer* ptp, PTPDataHandler *handler) {
    
-    printf("ptp_ptpicc_getdata\n");
+  //  printf("ptp_ptpicc_getdata\n");
 
     
     uint16_t res = ptp_ptpicc_getresp(params, ptp);
@@ -177,7 +177,7 @@ ptp_ptpicc_getdata (PTPParams* params, PTPContainer* ptp, PTPDataHandler *handle
     uint16_t responsetype = dtoh16a(&data[4]);
     ptp->Code		= dtoh16a(&data[6]);
     
-    printf("ptp_ptpicc_getdata code: 0x%x\n", ptp->Code);
+ //   printf("ptp_ptpicc_getdata code: 0x%x\n", ptp->Code);
 
     uint32_t transactionID = dtoh32a(&data[8]);
     ptp->Transaction_ID	= transactionID;
@@ -193,7 +193,7 @@ ptp_ptpicc_getdata (PTPParams* params, PTPContainer* ptp, PTPDataHandler *handle
                          params, handler->priv, dataLen, camdata
                          );
         
-        printf("ptp_ptpicc_getdata written %d\n", ret);
+    //    printf("ptp_ptpicc_getdata written %d\n", ret);
         
     }
     
@@ -230,7 +230,7 @@ ptp_ptpicc_getresp (PTPParams* params, PTPContainer* resp)
     
     resp->Transaction_ID	= transactionID;
     
-    printf("resp Transaction_ID %d\n", resp->Transaction_ID);
+   // printf("resp Transaction_ID %d\n", resp->Transaction_ID);
     n = (size - 12)/sizeof(uint32_t);
     switch (n) {
         case 5: resp->Param5 = dtoh32a(&data[28]);
