@@ -98,9 +98,22 @@
 		BE9DA60321CC3B7E0078E4D2 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F321CC3B7E0078E4D2 /* config.c */; };
 		BE9DA60421CC3B7E0078E4D2 /* library.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F421CC3B7E0078E4D2 /* library.c */; };
 		BE9DA60721CC3B7E0078E4D2 /* ptp.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F721CC3B7E0078E4D2 /* ptp.c */; };
-		BE9DA60821CC3B7E0078E4D2 /* ptpip.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F821CC3B7E0078E4D2 /* ptpip.c */; };
-		BE9DA60921CC3B7E0078E4D2 /* usb.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F921CC3B7E0078E4D2 /* usb.c */; };
 		BE9DA60A21CC3C7A0078E4D2 /* olympus-wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F521CC3B7E0078E4D2 /* olympus-wrap.c */; };
+		BE9DA60E21CC40130078E4D2 /* ptpicc.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA60D21CC40130078E4D2 /* ptpicc.c */; };
+		BE9DA60F21CC40550078E4D2 /* ptpip.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F821CC3B7E0078E4D2 /* ptpip.c */; };
+		BE9DA61021CC40570078E4D2 /* usb.c in Sources */ = {isa = PBXBuildFile; fileRef = BE9DA5F921CC3B7E0078E4D2 /* usb.c */; };
+		BE9DA61721CC68EF0078E4D2 /* gphoto2-abilities-list.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5DE21CC32530078E4D2 /* gphoto2-abilities-list.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61821CC68EF0078E4D2 /* gphoto2-camera.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5DF21CC32530078E4D2 /* gphoto2-camera.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61921CC68EF0078E4D2 /* gphoto2-context.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E021CC32530078E4D2 /* gphoto2-context.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61A21CC68EF0078E4D2 /* gphoto2-file.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E121CC32530078E4D2 /* gphoto2-file.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61B21CC68EF0078E4D2 /* gphoto2-filesys.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E221CC32530078E4D2 /* gphoto2-filesys.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61C21CC68EF0078E4D2 /* gphoto2-library.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E321CC32530078E4D2 /* gphoto2-library.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61D21CC68EF0078E4D2 /* gphoto2-list.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E421CC32530078E4D2 /* gphoto2-list.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61E21CC68EF0078E4D2 /* gphoto2-result.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E521CC32530078E4D2 /* gphoto2-result.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA61F21CC68EF0078E4D2 /* gphoto2-setting.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E621CC32530078E4D2 /* gphoto2-setting.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA62021CC68EF0078E4D2 /* gphoto2-version.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E721CC32530078E4D2 /* gphoto2-version.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA62121CC68EF0078E4D2 /* gphoto2-widget.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E821CC32530078E4D2 /* gphoto2-widget.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BE9DA62221CC68EF0078E4D2 /* gphoto2.h in Headers */ = {isa = PBXBuildFile; fileRef = BE9DA5E921CC32530078E4D2 /* gphoto2.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BEF8E4D221CB652100897C0B /* usb.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 90A666DC181846DA00592E25 /* usb.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -408,6 +421,7 @@
 		BE9DA5F721CC3B7E0078E4D2 /* ptp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptp.c; sourceTree = "<group>"; };
 		BE9DA5F821CC3B7E0078E4D2 /* ptpip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptpip.c; sourceTree = "<group>"; };
 		BE9DA5F921CC3B7E0078E4D2 /* usb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = usb.c; sourceTree = "<group>"; };
+		BE9DA60D21CC40130078E4D2 /* ptpicc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ptpicc.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -511,15 +525,16 @@
 				BE9DA5EE21CC3B7E0078E4D2 /* olympus-wrap.h */,
 				BE9DA5EF21CC3B7E0078E4D2 /* ptp-bugs.h */,
 				BE9DA5F021CC3B7E0078E4D2 /* ptp-private.h */,
+				BE9DA5F721CC3B7E0078E4D2 /* ptp.c */,
 				BE9DA5F121CC3B7E0078E4D2 /* ptp.h */,
 				BE9DA5F221CC3B7E0078E4D2 /* chdk.c */,
 				BE9DA5F321CC3B7E0078E4D2 /* config.c */,
 				BE9DA5F421CC3B7E0078E4D2 /* library.c */,
 				BE9DA5F521CC3B7E0078E4D2 /* olympus-wrap.c */,
 				BE9DA5F621CC3B7E0078E4D2 /* ptp-pack.c */,
-				BE9DA5F721CC3B7E0078E4D2 /* ptp.c */,
 				BE9DA5F821CC3B7E0078E4D2 /* ptpip.c */,
 				BE9DA5F921CC3B7E0078E4D2 /* usb.c */,
+				BE9DA60D21CC40130078E4D2 /* ptpicc.c */,
 			);
 			path = ptp2;
 			sourceTree = "<group>";
@@ -844,6 +859,18 @@
 				90A6669D18182A8400592E25 /* gphoto2-port-result.h in Headers */,
 				90A6669E18182A8400592E25 /* gphoto2-port-version.h in Headers */,
 				90A6669F18182A8400592E25 /* gphoto2-port.h in Headers */,
+				BE9DA61721CC68EF0078E4D2 /* gphoto2-abilities-list.h in Headers */,
+				BE9DA61821CC68EF0078E4D2 /* gphoto2-camera.h in Headers */,
+				BE9DA61921CC68EF0078E4D2 /* gphoto2-context.h in Headers */,
+				BE9DA61A21CC68EF0078E4D2 /* gphoto2-file.h in Headers */,
+				BE9DA61B21CC68EF0078E4D2 /* gphoto2-filesys.h in Headers */,
+				BE9DA61C21CC68EF0078E4D2 /* gphoto2-library.h in Headers */,
+				BE9DA61D21CC68EF0078E4D2 /* gphoto2-list.h in Headers */,
+				BE9DA61E21CC68EF0078E4D2 /* gphoto2-result.h in Headers */,
+				BE9DA61F21CC68EF0078E4D2 /* gphoto2-setting.h in Headers */,
+				BE9DA62021CC68EF0078E4D2 /* gphoto2-version.h in Headers */,
+				BE9DA62121CC68EF0078E4D2 /* gphoto2-widget.h in Headers */,
+				BE9DA62221CC68EF0078E4D2 /* gphoto2.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1197,10 +1224,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE9DA60921CC3B7E0078E4D2 /* usb.c in Sources */,
+				BE9DA61021CC40570078E4D2 /* usb.c in Sources */,
 				BE9DA60721CC3B7E0078E4D2 /* ptp.c in Sources */,
-				BE9DA60821CC3B7E0078E4D2 /* ptpip.c in Sources */,
+				BE9DA60F21CC40550078E4D2 /* ptpip.c in Sources */,
 				BE9DA60221CC3B7E0078E4D2 /* chdk.c in Sources */,
+				BE9DA60E21CC40130078E4D2 /* ptpicc.c in Sources */,
 				BE9DA60321CC3B7E0078E4D2 /* config.c in Sources */,
 				BE9DA60421CC3B7E0078E4D2 /* library.c in Sources */,
 				BE9DA60A21CC3C7A0078E4D2 /* olympus-wrap.c in Sources */,

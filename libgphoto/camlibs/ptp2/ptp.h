@@ -2766,6 +2766,8 @@ struct _PTPParams {
 	/* PTP: caching time for properties, default 2 */
 	int			cachetime;
 
+    int care_about_transaction_id;
+    
 	/* PTP: Storage Caching */
 	PTPStorageIDs		storageids;
 	int			storagechanged;
@@ -2853,6 +2855,16 @@ uint16_t ptp_ptpip_getdata	(PTPParams* params, PTPContainer* ptp,
 uint16_t ptp_ptpip_event_wait	(PTPParams* params, PTPContainer* event);
 uint16_t ptp_ptpip_event_check	(PTPParams* params, PTPContainer* event);
 uint16_t ptp_ptpip_event_check_queue	(PTPParams* params, PTPContainer* event);
+
+int      ptp_ptpicc_connect	(PTPParams* params, const char *port);
+uint16_t ptp_ptpicc_sendreq	(PTPParams* params, PTPContainer* req);
+uint16_t ptp_ptpicc_senddata	(PTPParams* params, PTPContainer* ptp,
+                                 uint64_t size, PTPDataHandler *handler);
+uint16_t ptp_ptpicc_getresp	(PTPParams* params, PTPContainer* resp);
+uint16_t ptp_ptpicc_getdata	(PTPParams* params, PTPContainer* ptp,
+                             PTPDataHandler *handler);
+uint16_t ptp_ptpicc_event_wait	(PTPParams* params, PTPContainer* event);
+uint16_t ptp_ptpicc_event_check	(PTPParams* params, PTPContainer* event);
 
 uint16_t ptp_getdeviceinfo	(PTPParams* params, PTPDeviceInfo* deviceinfo);
 

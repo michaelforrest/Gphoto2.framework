@@ -169,7 +169,10 @@ ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
 	ptp->Transaction_ID=params->transaction_id++;
 	ptp->SessionID=params->session_id;
 	/* send request */
-	CHECK_PTP_RC(params->sendreq_func (params, ptp, flags));
+    if (!(!params->care_about_transaction_id && (flags&PTP_DP_DATA_MASK) == PTP_DP_SENDDATA))
+    {
+        CHECK_PTP_RC(params->sendreq_func (params, ptp, flags));
+    }
 	/* is there a dataphase? */
 	switch (flags&PTP_DP_DATA_MASK) {
 	case PTP_DP_SENDDATA:
@@ -205,6 +208,8 @@ ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
 		}
 		CHECK_PTP_RC(ret);
 
+        if (params->care_about_transaction_id)
+        {
 		if (ptp->Transaction_ID < params->transaction_id-1) {
 			/* The Leica uses Transaction ID 0 on result from CloseSession. */
 			if (cmd == PTP_OC_CloseSession)
@@ -228,6 +233,7 @@ ptp_transaction_new (PTPParams* params, PTPContainer* ptp,
 			return PTP_ERROR_BADPARAM;
 #endif
 		}
+        }
 		break;
 	}
 	return ptp->Code;
