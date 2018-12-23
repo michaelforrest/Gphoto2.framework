@@ -98,6 +98,8 @@ ptp_ptpicc_sendreq (PTPParams* params, PTPContainer* req)
     int res;
 
     res = gp_port_write (camera->port, (char*)request, len);
+    
+    free(request);
     if (res != len) {
         gp_log (GP_LOG_DEBUG, "ptpicc sendreq",
                 "sending req result %d",res);
@@ -142,9 +144,15 @@ ptp_ptpicc_senddata (PTPParams* params, PTPContainer* ptp,
     /* For all camera devices. */
     int ret = handler->getfunc(params, handler->priv, size, request+12, &gotlen);
     if (ret != PTP_RC_OK)
+    {
+        free(request);
         return ret;
+    }
  //   printf("getfunc: %lld got: %lld\n", size, gotlen);
     res = gp_port_write (camera->port, (char*)request, len);
+    
+    free(request);
+
     if (res != packetlen) {
         gp_log (GP_LOG_DEBUG, "ptpicc sendreq",
                 "sending req result %d",res);
@@ -181,6 +189,8 @@ ptp_ptpicc_getdata (PTPParams* params, PTPContainer* ptp, PTPDataHandler *handle
 
     uint32_t transactionID = dtoh32a(&data[8]);
     ptp->Transaction_ID	= transactionID;
+    
+    free(data);
 
     if (responsetype==PTP_USB_CONTAINER_DATA)
     {
@@ -192,7 +202,7 @@ ptp_ptpicc_getdata (PTPParams* params, PTPContainer* ptp, PTPDataHandler *handle
         int ret = handler->putfunc(
                          params, handler->priv, dataLen, camdata
                          );
-        
+        free(camdata);
     //    printf("ptp_ptpicc_getdata written %d\n", ret);
         
     }
