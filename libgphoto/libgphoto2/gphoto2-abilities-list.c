@@ -430,6 +430,41 @@ gp_abilities_list_detect_usb (CameraAbilitiesList *list,
 }
 
 
+static int
+gp_abilities_list_detect_icc (CameraAbilitiesList *list,
+                              int *ability, GPPort *port)
+{
+    int i, count, res = GP_ERROR_IO_USB_FIND;
+    
+    CHECK_RESULT (count = gp_abilities_list_count (list));
+    
+    /* Detect USB cameras */
+    GP_LOG_D ("Auto-detecting USB cameras...");
+    *ability = -1;
+    for (i = 0; i < count; i++) {
+        int v, p, c, s;
+        
+        if (!(list->abilities[i].port == GP_PORT_USB))
+            continue;
+        
+        v = list->abilities[i].usb_vendor;
+        p = list->abilities[i].usb_product;
+        if (v) {
+            res = gp_port_usb_find_device(port, v, p);
+            if (res == GP_OK) {
+                GP_LOG_D ("Found '%s' (0x%x,0x%x)",
+                          list->abilities[i].model, v, p);
+                *ability = i;
+            }
+            if (res != GP_ERROR_IO_USB_FIND)
+                return res;
+        }
+    }
+    
+    return res;
+}
+
+
 /**
  * \param list a CameraAbilitiesList
  * \param info_list the GPPortInfoList of ports to use for detection
@@ -471,7 +506,7 @@ gp_abilities_list_detect (CameraAbilitiesList *list,
 		switch (type) {
 		case GP_PORT_USB:
 		case GP_PORT_USB_SCSI:
-		case GP_PORT_USB_DISK_DIRECT: {
+        case GP_PORT_USB_DISK_DIRECT: {
 			int ability;
 			
 			res = gp_abilities_list_detect_usb (list, &ability, port);
@@ -511,6 +546,21 @@ gp_abilities_list_detect (CameraAbilitiesList *list,
 			gp_list_append (l, "PTP/IP Camera", xpath);
 			break;
 		}
+        case GP_PORT_PTPICC:
+        {
+            int ability;
+            
+            res = gp_abilities_list_detect_icc (list, &ability, port);
+            if (res == GP_OK) {
+                gp_list_append(l,
+                               list->abilities[ability].model,
+                               xpath);
+            } else if (res < 0)
+                gp_port_set_error (port, NULL);
+            
+            break;
+            
+        }
 		default:
 			/*
 			 * We currently cannot detect any cameras on this
