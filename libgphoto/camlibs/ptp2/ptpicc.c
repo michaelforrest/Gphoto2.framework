@@ -142,7 +142,7 @@ ptp_ptpicc_senddata (PTPParams* params, PTPContainer* ptp,
     int res;
     unsigned long gotlen;
     /* For all camera devices. */
-    int ret = handler->getfunc(params, handler->priv, size, request+12, &gotlen);
+    int ret = handler->getfunc(params, handler->priv, size, request+packetlen, &gotlen);
     if (ret != PTP_RC_OK)
     {
         free(request);
