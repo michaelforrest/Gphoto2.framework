@@ -200,8 +200,12 @@ ptp_ptpicc_getdata (PTPParams* params, PTPContainer* ptp, PTPDataHandler *handle
         n = gp_port_read (camera->port, (char*)camdata, 0);
 
         int ret = handler->putfunc(
-                         params, handler->priv, dataLen, camdata
+                         params, handler->priv, n, camdata
                          );
+        
+        //  ptp_canon_getviewfinderimage seems to think param1 should contain the length of the image data
+        ptp->Param1 = n;
+        
         free(camdata);
     //    printf("ptp_ptpicc_getdata written %d\n", ret);
         
@@ -231,7 +235,11 @@ ptp_ptpicc_getresp (PTPParams* params, PTPContainer* resp)
     Camera *camera = ((PTPData *)params->data)->camera;
 
     n = gp_port_read (camera->port, (char*)data, n);
-
+    if (n < 0)
+    {
+        return PTP_ERROR_TIMEOUT;
+    }
+    
     int size = dtoh32a(&data[0]);
     uint16_t responsetype = dtoh16a(&data[4]);
     resp->Code		= dtoh16a(&data[6]);
