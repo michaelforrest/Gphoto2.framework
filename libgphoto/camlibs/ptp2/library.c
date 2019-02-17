@@ -2317,9 +2317,8 @@ static struct {
 	unsigned short usb_product;
 	unsigned long flags;
 } mtp_models[] = {
-#ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-#include "music-players.h"
-#endif
+
+    
 };
 
 static struct {
