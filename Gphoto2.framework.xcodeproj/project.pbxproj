@@ -909,12 +909,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Gphoto2-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					"-Wl,-reexport-lgphoto2.6",
-					"-Wl,-reexport-lgphoto2_port.10",
+					"-Wl,-reexport_library",
+					"${CONFIGURATION_BUILD_DIR}/libgphoto2.6.dylib",
+					"-Wl,-reexport_library",
+					"${CONFIGURATION_BUILD_DIR}/libgphoto2_port.10.dylib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -949,11 +951,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Gphoto2-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				OTHER_LDFLAGS = (
-					"-Wl,-reexport-lgphoto2.6",
-					"-Wl,-reexport-lgphoto2_port.10",
+					"-Wl,-reexport_library",
+					"${CONFIGURATION_BUILD_DIR}/libgphoto2.6.dylib",
+					"-Wl,-reexport_library",
+					"${CONFIGURATION_BUILD_DIR}/libgphoto2_port.10.dylib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
