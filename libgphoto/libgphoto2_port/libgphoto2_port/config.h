@@ -2,7 +2,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define if you want to disabled debugging. */
-/* #undef DISABLE_DEBUGGING */
+#define DISABLE_DEBUGGING 
 
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
