@@ -2821,6 +2821,8 @@ struct _PTPParams {
 	 */
 	uint8_t		*response_packet;
 	uint16_t	response_packet_size;
+    
+    long long frameCount;
 };
 
 /* Asynchronous event callback */

@@ -2774,6 +2774,9 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 		}
 		/* Canon EOS DSLR preview mode */
 		if (ptp_operation_issupported(params, PTP_OC_CANON_EOS_GetViewFinderData)) {
+            
+            params->frameCount++;
+            
 			PTPPropertyValue	val;
 			/* FIXME: this might cause a focusing pass and take seconds. 20 was not
 			 * enough (would be 0.2 seconds, too short for the mirror up operation.). */
@@ -2809,16 +2812,22 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 			}
 			ptp_free_devicepropdesc (&dpd);
 
+            // ken - don't send this on every frame
+            
 			/* Otherwise the camera will auto-shutdown */
-			if (ptp_operation_issupported(params, PTP_OC_CANON_EOS_KeepDeviceOn)) C_PTP (ptp_canon_eos_keepdeviceon (params));
-
+			if (params->frameCount % 18000 == 17999)
+            {
+                if (ptp_operation_issupported(params, PTP_OC_CANON_EOS_KeepDeviceOn)) C_PTP (ptp_canon_eos_keepdeviceon (params));
+            }
+            
 			params->inliveview = 1;
 			event_start = time_now();
 			do {
 				unsigned char	*xdata;
 				/* Poll for camera events, but just call
 				 * it once and do not drain the queue now */
-				C_PTP (ptp_check_eos_events (params));
+                // ken - taking this out.
+				//C_PTP (ptp_check_eos_events (params));
 
 				ret = ptp_canon_eos_get_viewfinder_image (params , &data, &size);
 				if ((ret == 0xa102) || (ret == PTP_RC_DeviceBusy)) { /* means "not there yet" ... so wait */
