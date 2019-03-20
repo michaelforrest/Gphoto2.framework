@@ -2815,9 +2815,20 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
             // ken - don't send this on every frame
             
 			/* Otherwise the camera will auto-shutdown */
-			if (params->frameCount % 18000 == 17999)
+			if (params->frameCount % 1000 == 999)
             {
                 if (ptp_operation_issupported(params, PTP_OC_CANON_EOS_KeepDeviceOn)) C_PTP (ptp_canon_eos_keepdeviceon (params));
+                
+                C_PTP (ptp_check_eos_events (params));
+
+                ret = ptp_canon_eos_getdevicepropdesc (params, PTP_DPC_CANON_EOS_EVFOutputDevice, &dpd);
+                if ((ret != PTP_RC_OK) || (dpd.CurrentValue.u32 != 2)) {
+                    /* 2 means PC, 1 means TFT */
+                    val.u32 = 2;
+                    C_PTP_MSG (ptp_canon_eos_setdevicepropvalue (params, PTP_DPC_CANON_EOS_EVFOutputDevice, &val, PTP_DTC_UINT32),
+                               "setval of evf outputmode to 2 failed (curval is %d)!", dpd.CurrentValue.u32);
+                }
+                ptp_free_devicepropdesc (&dpd);
             }
             
 			params->inliveview = 1;
