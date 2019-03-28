@@ -2,17 +2,18 @@
 # This file is distributed under the same license as the libgphoto2 package.
 #
 # Miloslav Trmac <mitr@volny.cz>, 2003.
-# Marek Černocký <marek@manet.cz>, 2011, 2012.
+# Marek Černocký <marek@manet.cz>, 2011, 2012, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libgphoto2_port 2.5.1\n"
+"Project-Id-Version: libgphoto2_port 2.5.3\n"
 "Report-Msgid-Bugs-To: gphoto-devel@lists.sourceforge.net\n"
 "POT-Creation-Date: 2014-01-06 14:47+0100\n"
-"PO-Revision-Date: 2013-06-06 17:48+0200\n"
+"PO-Revision-Date: 2014-03-09 13:57+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "Language: cs\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -242,18 +243,17 @@ msgid "Closing port..."
 msgstr "Zavírá se port…"
 
 #: libgphoto2_port/gphoto2-port.c:313
-#, fuzzy
 msgid "Resetting port..."
-msgstr "Uvolňuje se port…"
+msgstr "Resetuje se port…"
 
 #: libgphoto2_port/gphoto2-port.c:335
 msgid "Freeing port..."
 msgstr "Uvolňuje se port…"
 
 #: libgphoto2_port/gphoto2-port.c:386
-#, fuzzy, c-format
+#, c-format
 msgid "Writing %i=0x%x byte(s) to port..."
-msgstr "Zapisuje se %i=0x%x bajt na port…"
+msgstr "Zapisuje se %i=0x%x bajtů na port…"
 
 #: libgphoto2_port/gphoto2-port.c:399
 #, c-format
@@ -290,9 +290,9 @@ msgstr[1] "Čtou se %i=0x%x bajty z koncového bodu přerušení…"
 msgstr[2] "Čte se %i=0x%x bajtů z koncového bodu přerušení…"
 
 #: libgphoto2_port/gphoto2-port.c:473
-#, fuzzy, c-format
+#, c-format
 msgid "Could only read %i out of %i byte(s)"
-msgstr "Je možné přečíst pouze %i z %i bajtu"
+msgstr "Je možné přečíst pouze %i z %i bajtů"
 
 #: libgphoto2_port/gphoto2-port.c:527
 #, c-format
@@ -303,9 +303,9 @@ msgstr[1] "Čtou se %i=0x%x bajty z koncového bodu přerušení (zrychleně)…
 msgstr[2] "Čte se %i=0x%x bajtů z koncového bodu přerušení (zrychleně)…"
 
 #: libgphoto2_port/gphoto2-port.c:555
-#, fuzzy, c-format
+#, c-format
 msgid "Setting timeout to %i millisecond(s)..."
-msgstr "Nastavuje se časové omezení na %i milisekundu…"
+msgstr "Nastavuje se časové omezení na %i ms…"
 
 #: libgphoto2_port/gphoto2-port.c:591
 msgid "Getting timeout..."
@@ -344,9 +344,9 @@ msgid "Setting pin %i (%s: '%s') to '%s'..."
 msgstr "Nastavuje se vývod %i (%s: „%s“) na „%s“…"
 
 #: libgphoto2_port/gphoto2-port.c:767
-#, fuzzy, c-format
+#, c-format
 msgid "Sending break (%i milliseconds)..."
-msgstr "Posílá se přerušení (%i milisekunda)…"
+msgstr "Posílá se přerušení (%i ms)…"
 
 #: libgphoto2_port/gphoto2-port.c:793
 msgid "Flushing port..."
@@ -359,14 +359,12 @@ msgstr "Nulování stavu zastavení…"
 #: libgphoto2_port/gphoto2-port.c:898
 #, c-format
 msgid "Writing message (request=0x%x value=0x%x index=0x%x size=%i=0x%x)..."
-msgstr ""
-"Zapisuje se zpráva (požadavek=0x%x hodnota=0x%x index=0x%x velikost=%i=0x%x)…"
+msgstr "Zapisuje se zpráva (požadavek=0x%x hodnota=0x%x index=0x%x velikost=%i=0x%x)…"
 
 #: libgphoto2_port/gphoto2-port.c:933
 #, c-format
 msgid "Reading message (request=0x%x value=0x%x index=0x%x size=%i=0x%x)..."
-msgstr ""
-"Čte se zpráva (požadavek=0x%x hodnota=0x%x index=0x%x velikost=%i=0x%x)…"
+msgstr "Čte se zpráva (požadavek=0x%x hodnota=0x%x index=0x%x velikost=%i=0x%x)…"
 
 #: libgphoto2_port/gphoto2-port.c:1277
 msgid "No error description available"
@@ -520,23 +518,17 @@ msgid "Could not query kernel driver of device."
 msgstr "Nelze se dotázat jaderného ovladače zařízení."
 
 #: usb/libusb.c:303 libusb1/libusb1.c:356
-#, fuzzy, c-format
-msgid ""
-"Could not claim interface %d (%s). Make sure no other program (%s) or kernel "
-"module (such as %s) is using the device and you have read/write access to "
-"the device."
-msgstr ""
-"Nelze přidělit rozhraní %d (%s). Zkontrolujte, že žádný jiný program nebo "
-"jaderný modul (např. %s) zařízení nepoužívá a že máte k zařízení přístup pro "
-"čtení a pro zápis."
+#, c-format
+msgid "Could not claim interface %d (%s). Make sure no other program (%s) or kernel module (such as %s) is using the device and you have read/write access to the device."
+msgstr "Nelze přidělit rozhraní %d (%s). Zkontrolujte, že žádný jiný program (%s) nebo jaderný modul (např. %s) zařízení nepoužívá a že máte k zařízení přístup pro čtení a pro zápis."
 
 #: usb/libusb.c:315 libusb1/libusb1.c:367
 msgid "MacOS PTPCamera service"
-msgstr ""
+msgstr "Služba MacOS PTPCamera"
 
 #: usb/libusb.c:317 libusb1/libusb1.c:369
 msgid "unknown libgphoto2 using program"
-msgstr ""
+msgstr "neznámý program používaný libgphoto2"
 
 #: usb/libusb.c:335 libusb1/libusb1.c:387
 #, c-format
@@ -570,31 +562,19 @@ msgstr "Poskytnuté ID dodavatele nebo produktu (0x%x,0x%x) není platné."
 
 #: usb/libusb.c:817 libusb1/libusb1.c:944
 #, c-format
-msgid ""
-"USB device (vendor 0x%x, product 0x%x) is a mass storage device, and might "
-"not function with gphoto2. Reference: %s"
-msgstr ""
-"Zařízení USB (výrobce 0x%x, výrobek 0x%x) je zařízení typu „master storage“ "
-"a možná nebude s gphoto2 fungovat. Příručka: %s"
+msgid "USB device (vendor 0x%x, product 0x%x) is a mass storage device, and might not function with gphoto2. Reference: %s"
+msgstr "Zařízení USB (výrobce 0x%x, výrobek 0x%x) je zařízení typu „master storage“ a možná nebude s gphoto2 fungovat. Příručka: %s"
 
 #: usb/libusb.c:860 usb/libusb.c:955 libusb1/libusb1.c:873
 #: libusb1/libusb1.c:976
 #, c-format
-msgid ""
-"Could not find USB device (vendor 0x%x, product 0x%x). Make sure this device "
-"is connected to the computer."
-msgstr ""
-"Nelze najít zařízení USB (dodavatel 0x%x, produkt 0x%x). Zkontrolujte, že je "
-"toto zařízení připojeno k počítači."
+msgid "Could not find USB device (vendor 0x%x, product 0x%x). Make sure this device is connected to the computer."
+msgstr "Nelze najít zařízení USB (dodavatel 0x%x, produkt 0x%x). Zkontrolujte, že je toto zařízení připojeno k počítači."
 
 #: usb/libusb.c:1259 libusb1/libusb1.c:1274
 #, c-format
-msgid ""
-"Could not find USB device (class 0x%x, subclass 0x%x, protocol 0x%x). Make "
-"sure this device is connected to the computer."
-msgstr ""
-"Nelze najít zařízení USB (třída 0x%x, podtřída 0x%x, protokol 0x%x). "
-"Zkontrolujte, že je toto zařízení připojeno k počítači."
+msgid "Could not find USB device (class 0x%x, subclass 0x%x, protocol 0x%x). Make sure this device is connected to the computer."
+msgstr "Nelze najít zařízení USB (třída 0x%x, podtřída 0x%x, protokol 0x%x). Zkontrolujte, že je toto zařízení připojeno k počítači."
 
 #: libusb1/libusb1.c:338
 #, c-format

@@ -95,7 +95,7 @@ gp_log_add_func (GPLogLevel level, GPLogFunc func, void *data)
 
 	return logfuncid;
 }
-
+#endif
 
 char*
 gpi_vsnprintf (const char* format, va_list args)
@@ -125,6 +125,8 @@ gpi_vsnprintf (const char* format, va_list args)
 
 	return str;
 }
+
+#ifndef DISABLE_DEBUGGING
 
 /**
  * \brief Remove a logging receiving function

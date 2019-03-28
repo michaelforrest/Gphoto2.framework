@@ -156,7 +156,7 @@ gp_context_progress_start (GPContext *context, float target,
 			   const char *format, ...)
 {
 	va_list args;
-	char *str;
+	char *str = NULL;
 	unsigned int id;
 
 	if (!context)
@@ -164,11 +164,11 @@ gp_context_progress_start (GPContext *context, float target,
 	if (!context->progress_start_func)
 		return (0);
 
-#ifndef DISABLE_DEBUGGING
+//#ifndef DISABLE_DEBUGGING
     va_start (args, format);
 	str = gpi_vsnprintf(format, args);
 	va_end (args);
-#endif
+//#endif
 	if (!str)
 		return 0;
 
@@ -204,13 +204,13 @@ void
 gp_context_error (GPContext *context, const char *format, ...)
 {
 	va_list args;
-	char *str;
+	char *str = NULL;
 
-#ifndef DISABLE_DEBUGGING
+//#ifndef DISABLE_DEBUGGING
 	va_start (args, format);
 	str = gpi_vsnprintf(format, args);
 	va_end (args);
-#endif
+//#endif
     
 	if (!str)
 		return;
@@ -227,13 +227,13 @@ void
 gp_context_status (GPContext *context, const char *format, ...)
 {
 	va_list args;
-	char *str;
+	char *str = NULL;
 
-#ifndef DISABLE_DEBUGGING
+//#ifndef DISABLE_DEBUGGING
 	va_start (args, format);
 	str = gpi_vsnprintf(format, args);
 	va_end (args);
-#endif
+//#endif
     
 	if (!str)
 		return;
@@ -262,13 +262,13 @@ void
 gp_context_message (GPContext *context, const char *format, ...)
 {
 	va_list args;
-	char *str;
+	char *str = NULL;
 
-#ifndef DISABLE_DEBUGGING
+//#ifndef DISABLE_DEBUGGING
 	va_start (args, format);
 	str = gpi_vsnprintf(format, args);
 	va_end (args);
-#endif
+//#endif
     
 	if (!str)
 		return;
@@ -299,13 +299,13 @@ gp_context_question (GPContext *context, const char *format, ...)
 {
 	GPContextFeedback feedback;
 	va_list args;
-	char *str;
+	char *str = NULL;
 
-#ifndef DISABLE_DEBUGGING
+//#ifndef DISABLE_DEBUGGING
 	va_start (args, format);
 	str = gpi_vsnprintf(format, args);
 	va_end (args);
-#endif
+//#endif
     
 	if (!str)
 		return GP_CONTEXT_FEEDBACK_OK;
