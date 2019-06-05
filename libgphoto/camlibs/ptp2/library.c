@@ -2095,6 +2095,9 @@ static struct {
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:SX 720HS",			0x04a9, 0x32c2, PTP_CAP|PTP_CAP_PREVIEW},
 
+    /* Sagufta Kapadia <sagufta.kapadia@gmail.com> */
+    {"Canon:SX 620HS",			0x04a9, 0x32c3, PTP_CAP|PTP_CAP_PREVIEW},
+    
 	/* https://github.com/gphoto/libgphoto2/issues/235 */
 	{"Canon:EOS M6",			0x04a9, 0x32c5, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -2126,6 +2129,9 @@ static struct {
 
 	/* Elijah Parker <mail@timelapseplus.com> */
 	{"Canon:EOS R",          		0x04a9, 0x32da, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
+    /* Elijah Parker <mail@timelapseplus.com> */
+    {"Canon:EOS RP",          		0x04a9, 0x32e2, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
