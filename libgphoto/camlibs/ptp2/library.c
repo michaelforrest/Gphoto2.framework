@@ -2118,6 +2118,11 @@ static struct {
 	/* "Lacy Rhoades" <lacy@colordeaf.net> */
 	{"Canon:EOS 200D",          		0x04a9, 0x32cc, PTP_CAP|PTP_CAP_PREVIEW},
 
+//    {"Canon:EOS 250D",          		0x04a9, ???, PTP_CAP|PTP_CAP_PREVIEW},
+
+    /* "Lacy Rhoades" <lacy@colordeaf.net> */
+    {"Canon:EOS 200D II",          		0x04a9, 0x32e9, PTP_CAP|PTP_CAP_PREVIEW},
+    
 	/* Geza Lore <gezalore@gmail.com> */
 	{"Canon:EOS M100",          		0x04a9, 0x32d1, PTP_CAP|PTP_CAP_PREVIEW},
 
