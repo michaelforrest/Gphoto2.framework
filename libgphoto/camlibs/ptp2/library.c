@@ -630,9 +630,12 @@ nikon_wait_busy(PTPParams *params, int waitms, int timeout) {
 
 	do {
 		res = ptp_nikon_device_ready(params);
-		if (res != PTP_RC_DeviceBusy)
-			return res;
-		if (waitms) usleep(waitms*1000)/*wait a bit*/;
+        if (res != PTP_RC_DeviceBusy) {
+            if (res == 0xa201)	/* seems to mean something like "not relevant" ... will repeat forever */
+                return PTP_RC_OK;
+            return res;
+        }
+        if (waitms) usleep(waitms*1000)/*wait a bit*/;
 	} while (tries--);
 	return res;
 }
@@ -2118,8 +2121,9 @@ static struct {
 	/* "Lacy Rhoades" <lacy@colordeaf.net> */
 	{"Canon:EOS 200D",          		0x04a9, 0x32cc, PTP_CAP|PTP_CAP_PREVIEW},
 
-//    {"Canon:EOS 250D",          		0x04a9, ???, PTP_CAP|PTP_CAP_PREVIEW},
-
+    /* Roland Förg <roland.foerg@arcor.de> */
+    {"Canon:EOS 250D",			0x04a9, 0x32e9, PTP_CAP|PTP_CAP_PREVIEW},
+    
     /* "Lacy Rhoades" <lacy@colordeaf.net> */
     {"Canon:EOS 200D II",          		0x04a9, 0x32e9, PTP_CAP|PTP_CAP_PREVIEW},
     
@@ -2140,6 +2144,12 @@ static struct {
 
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
+
+    /* https://github.com/gphoto/gphoto2/issues/247, from logfile */
+    {"Canon:EOS 1500D",          		0x04a9, 0x32e1, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
+    /*Marc Wetli <wetli@egoshooting.com> */
+    {"Canon:EOS M6 Mark II",		0x04a9, 0x32e7, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Jasem Mutlaq <mutlaqja@ikarustech.com> */
 	{"Canon:EOS 4000D",			0x04a9, 0x32d9, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
@@ -5234,7 +5244,7 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 		PTPPropertyValue propval;
 
 		C_PTP_REP (ptp_check_event (params));
-		C_PTP_REP (nikon_wait_busy (params, 100, 1000)); /* lets wait 1 second */
+		C_PTP_REP (nikon_wait_busy (params, 100, 2000)); /* lets wait 2 second */
 		C_PTP_REP (ptp_check_event (params));
 
 		if (ptp_property_issupported (params, PTP_DPC_NIKON_LiveViewStatus)) {
@@ -8567,6 +8577,8 @@ camera_init (Camera *camera, GPContext *context)
 			if (is_canon_eos_m(params)) {
 				int mode = 0x15;	/* default for EOS M and newer Powershot SX */
 
+                if (!strcmp(params->deviceinfo.Model,"Canon EOS M6 Mark II")) mode = 0x1;
+                
 				/* according to reporter only needed in config.c part 
 				if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
 				*/

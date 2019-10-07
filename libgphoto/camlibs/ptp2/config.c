@@ -382,7 +382,8 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 		int mode = 0x15;	/* default for EOS M and newer Powershot SX */
 
 		if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
-		C_PTP (ptp_canon_eos_setremotemode(params, mode));
+        if (!strcmp(params->deviceinfo.Model,"Canon EOS M6 Mark II")) mode = 0x1;
+        C_PTP (ptp_canon_eos_setremotemode(params, mode));
 	} else {
 		C_PTP (ptp_canon_eos_setremotemode(params, 1));
 	}
