@@ -1061,7 +1061,7 @@ static struct {
 	{"Sony:DSC-RX100M4",          		0x054c, 0x0a6d, 0},
 
 	/* Andre Crone <andre@elysia.nl>, adjusted */
-	{"Sony:Alpha-A7S II (Control)",		0x054c,0x0a71, PTP_CAP},
+    {"Sony:Alpha-A7S II (Control)",        0x054c,0x0a71, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Demo7up <demo7up@gmail.com> */
 	{"Sony:UMC-R10C",			0x054c,0x0a79, 0},
@@ -2055,6 +2055,9 @@ static struct {
 	/* pravsripad@gmail.com */
 	{"Canon:PowerShot SX520 HS",		0x04a9, 0x329b, PTPBUG_DELETE_SENDS_EVENT},
 
+    /* Sascha Wolff <sascha.wolff1@gmail.com> */
+     {"Canon:PowerShot SX530 HS",        0x04a9, 0x329f, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
 	/* sparkycoladev@gmail.com */
 	{"Canon:PowerShot G7 X",		0x04a9, 0x329d, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
@@ -2145,8 +2148,9 @@ static struct {
 	{"Canon:EOS R",          		0x04a9, 0x32da, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
     /* Elijah Parker <mail@timelapseplus.com> */
+    // same id as "R2"
     {"Canon:EOS RP",          		0x04a9, 0x32e2, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-
+    
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
 
