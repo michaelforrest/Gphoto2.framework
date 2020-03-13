@@ -131,7 +131,7 @@ or obtained by writing to the Free Software Foundation, Inc.,
 # define LT_DIRSEP_CHAR		'\\'
 # define LT_PATHSEP_CHAR	';'
 #else
-# define LT_PATHSEP_CHAR	':'
+# define LT_PATHSEP_CHAR	'\n'
 #endif
 
 #if defined(_MSC_VER) /* Visual Studio */
