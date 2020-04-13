@@ -183,6 +183,7 @@ typedef struct _PTPIPHeader PTPIPHeader;
 /* gphoto overrides */
 #define PTP_VENDOR_GP_OLYMPUS          0x0000fffe
 #define PTP_VENDOR_GP_OLYMPUS_OMD      0x0000fffd
+#define PTP_VENDOR_GP_LEICA            0x0000fffc
 
 
 /* Operation Codes */
@@ -749,8 +750,14 @@ typedef struct _PTPIPHeader PTPIPHeader;
 #define PTP_OC_LEICA_SetIPTCData			0x900f
 #define PTP_OC_LEICA_GetIPTCData			0x9010
 #define PTP_OC_LEICA_Get3DAxisData			0x9020
+#define PTP_OC_LEICA_LESetZoomMode            0x9021    /* lr plugin */
+#define PTP_OC_LEICA_LESetFocusCrossPosition        0x9022    /* lr plugin */
+#define PTP_OC_LEICA_LESetDisplayWindowPosition        0x9024    /* lr plugin */
+#define PTP_OC_LEICA_LEGetStreamData            0x9025    /* lr plugin */
+#define PTP_OC_LEICA_OpenLiveViewSession        0x9030
 #define PTP_OC_LEICA_OpenLiveViewSession		0x9030
 #define PTP_OC_LEICA_CloseLiveViewSession		0x9031
+#define PTP_OC_LEICA_LESetDateTime            0x9036    /* lr plugin */
 #define PTP_OC_LEICA_OpenProductionSession		0x9100
 #define PTP_OC_LEICA_CloseProductionSession		0x9101
 #define PTP_OC_LEICA_UpdateFirmware			0x9102
@@ -1110,6 +1117,19 @@ struct _PTPStorageInfo {
 	char	*VolumeLabel;
 };
 typedef struct _PTPStorageInfo PTPStorageInfo;
+
+/* PTP Stream Info */
+struct _PTPStreamInfo {
+   uint64_t    DatasetSize;
+   uint64_t    TimeResolution;
+   uint32_t    FrameHeaderSize;
+   uint32_t    FrameMaxSize;
+   uint32_t    PacketHeaderSize;
+   uint32_t    PacketMaxSize;
+   uint32_t    PacketAlignment;
+};
+typedef struct _PTPStreamInfo PTPStreamInfo;
+
 
 /* PTP objecthandles structure (returned by GetObjectHandles) */
 
@@ -3099,7 +3119,8 @@ uint16_t ptp_getfilesystemmanifest (PTPParams* params, uint32_t storage,
                         uint32_t objectformatcode, uint32_t associationOH,
         		uint64_t *numoifs, PTPObjectFilesystemInfo **oifs);
 
-
+uint16_t ptp_getstreaminfo (PTPParams *params, uint32_t streamid, PTPStreamInfo *si);
+uint16_t ptp_getstream (PTPParams* params, unsigned char **data, unsigned int *size);
 
 uint16_t ptp_check_event (PTPParams *params);
 uint16_t ptp_check_event_queue (PTPParams *params);
@@ -3847,7 +3868,9 @@ uint16_t ptp_olympus_omd_capture (PTPParams* params);
 uint16_t ptp_olympus_init_pc_mode (PTPParams* params);
 uint16_t ptp_olympus_sdram_image (PTPParams* params, unsigned char **data, unsigned int *size);
 
-
+#define ptp_leica_leopensession(params,session) ptp_generic_no_data(params,PTP_OC_LEICA_LEOpenSession,1,session)
+#define ptp_leica_leclosesession(params) ptp_generic_no_data(params,PTP_OC_LEICA_LECloseSession,0)
+uint16_t ptp_leica_getstreamdata (PTPParams* params, unsigned char **data, unsigned int *size);
 
 #define ptp_panasonic_capture(params) ptp_generic_no_data(params,PTP_OC_PANASONIC_InitiateCapture,1,0x3000011)
 

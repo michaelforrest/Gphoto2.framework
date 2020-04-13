@@ -1471,7 +1471,11 @@ static struct {
 
 	/* Marcus Meissner */
 	{"Nikon:Z6",                	  0x04b0, 0x0443, PTP_CAP|PTP_CAP_PREVIEW},
-	/* Schreiber, Steve via Gphoto-devel */
+	
+    /* Daniel Baertschi <daniel@avisec.ch> */
+     {"Nikon:Z50",                      0x04b0, 0x0444, PTP_CAP|PTP_CAP_PREVIEW},
+    
+    /* Schreiber, Steve via Gphoto-devel */
 	{"Nikon:DSC D3500",		  0x04b0, 0x0445, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* http://sourceforge.net/tracker/?func=detail&aid=3536904&group_id=8874&atid=108874 */
@@ -2160,6 +2164,9 @@ static struct {
     /*Marc Wetli <wetli@egoshooting.com> */
     {"Canon:EOS M6 Mark II",		0x04a9, 0x32e7, PTP_CAP|PTP_CAP_PREVIEW},
 
+    /* Slavko Kocjancic <eslavko@gmail.com> */
+     {"Canon:Digital PowerShot SX730IS",    0x04a9, 0x32d6, PTP_CAP|PTP_CAP_PREVIEW},
+    
 	/* Jasem Mutlaq <mutlaqja@ikarustech.com> */
 	{"Canon:EOS 4000D",			0x04a9, 0x32d9, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
 
@@ -2376,6 +2383,9 @@ static struct {
 	/* Bernhard Wagner <me@bernhardwagner.net> */
 	{"Leica:M9",				0x1a98,	0x0002, PTP_CAP},
 
+    /* Christopher Kao <christopherkao@icloud.com> */
+     {"Leica:SL (Typ 601)",            0x1a98,    0x2041, PTP_CAP},
+    
 	/* https://github.com/gphoto/libgphoto2/issues/105 */
 	{"Parrot:Sequoia",			0x19cf,	0x5039, PTP_CAP},
 
@@ -2769,7 +2779,15 @@ camera_exit (Camera *camera, GPContext *context)
 		case PTP_VENDOR_FUJI:
 			CR (camera_unprepare_capture (camera, context));
 			break;
-		}
+
+        case PTP_VENDOR_GP_OLYMPUS_OMD: {
+ 			PTPPropertyValue propval;
+
+ 			propval.u16 = 0;
+ 			CR (ptp_setdevicepropvalue (params, 0xD052, &propval, PTP_DTC_UINT16));
+ 			break;
+ 		}
+        }
 
 		if (camera->pl->checkevents)
 			ptp_check_event (params);
@@ -2839,6 +2857,39 @@ add_object (Camera *camera, uint32_t handle, GPContext *context)
 	C_PTP (ptp_object_want (params, handle, 0, &ob));
 	return GP_OK;
 }
+
+static int
+camera_capture_stream_preview (Camera *camera, CameraFile *file, GPContext *context) {
+   PTPParams        *params = &camera->pl->params;
+   PTPPropertyValue    propval;
+   PTPStreamInfo        sinfo;
+   unsigned char		*data;
+   unsigned int		size;
+    
+   C_PTP (ptp_getdevicepropvalue (params, PTP_DPC_EnabledStreams, &propval, PTP_DTC_UINT32));
+   if (!(propval.u32 & 1)) {    /* video enabled already ? */
+       propval.u32 = 1;
+       C_PTP (ptp_setdevicepropvalue (params, PTP_DPC_EnabledStreams, &propval, PTP_DTC_UINT32));
+   }
+   C_PTP (ptp_getstreaminfo (params, 1, &sinfo));
+
+   if (    (params->deviceinfo.VendorExtensionID == PTP_VENDOR_GP_LEICA) &&
+       (ptp_operation_issupported(params, PTP_OC_LEICA_LEGetStreamData))
+   ) {
+       C_PTP (ptp_leica_getstreamdata (params, &data, &size));
+       gp_file_append (file, data, size);
+       free (data);
+       return GP_OK;
+   }
+   if (ptp_operation_issupported(params, PTP_OC_GetStream)) {
+       C_PTP (ptp_getstream (params, &data, &size));
+       gp_file_append (file, data, size);
+       free (data);
+       return GP_OK;
+   }
+   return GP_ERROR_NOT_SUPPORTED;
+}
+
 
 static int
 camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
@@ -3349,9 +3400,23 @@ enable_liveview:
 		SET_CONTEXT_P(params, NULL);
 		return GP_OK;
 	}
+            
 	default:
 		break;
 	}
+    
+    /* Check if we can do PTP 1.1 stream method */
+     if (    ptp_operation_issupported(params,PTP_OC_GetStreamInfo) &&
+         ptp_property_issupported(params, PTP_DPC_SupportedStreams)
+     )  {
+         PTPPropertyValue propval;
+
+         C_PTP (ptp_getdevicepropvalue (params, PTP_DPC_SupportedStreams, &propval, PTP_DTC_UINT32));
+         if (propval.u32 & 1) /* camera does Video streams */
+             return camera_capture_stream_preview (camera, file, context);
+         /* fallthrough */
+     }
+    
 	return GP_ERROR_NOT_SUPPORTED;
 }
 
@@ -6384,6 +6449,22 @@ camera_summary (Camera* camera, CameraText* summary, GPContext *context)
 	}
 	APPEND_TXT ("\n");
 
+    /* PTP 1.1 streams */
+     if (    ptp_operation_issupported(params,PTP_OC_GetStreamInfo) &&
+         ptp_property_issupported(params, PTP_DPC_SupportedStreams)
+     )  {
+         PTPPropertyValue propval;
+
+         ret = ptp_getdevicepropvalue (params, PTP_DPC_SupportedStreams, &propval, PTP_DTC_UINT32);
+         if (ret == PTP_RC_OK) {
+             APPEND_TXT (_("\nStreams:"));
+             APPEND_TXT ("%08x", propval.u32);
+             if (propval.u32 & (0<<1)) APPEND_TXT (_("Video "));
+             if (propval.u32 & (1<<1)) APPEND_TXT (_("Audio"));
+             APPEND_TXT ("\n");
+         }
+     }
+    
 	if (is_mtp_capable (camera) &&
 	    ptp_operation_issupported(params,PTP_OC_MTP_GetObjectPropsSupported)
 	) {

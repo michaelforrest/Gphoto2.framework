@@ -452,7 +452,7 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 	C_PTP (ptp_check_eos_events (params));
 	params->eos_captureenabled = 1;
 
-	if (is_canon_eos_m (params)) {
+	if (is_canon_eos_m (params) && strstr(params->deviceinfo.Model,"EOS")) {
 		PTPPropertyValue    ct_val;
 
 		GP_LOG_D ("EOS M detected");
@@ -951,6 +951,24 @@ _get_STR(CONFIG_GET_ARGS) {
 	return (GP_OK);
 }
 
+
+static int
+_get_STR_ENUMList (CONFIG_GET_ARGS) {
+   int j;
+
+   if (!(dpd->FormFlag & PTP_DPFF_Enumeration))
+       return GP_ERROR;
+   if (dpd->DataType != PTP_DTC_STR)
+       return GP_ERROR;
+   gp_widget_new (GP_WIDGET_RADIO, _(menu->label), widget);
+   gp_widget_set_name (*widget, menu->name);
+   for (j=0;j<dpd->FORM.Enum.NumberOfValues; j++)
+       gp_widget_add_choice (*widget,dpd->FORM.Enum.SupportedValue[j].str);
+   gp_widget_set_value (*widget,dpd->CurrentValue.str);
+   return GP_OK;
+}
+
+
 static int
 _put_STR(CONFIG_PUT_ARGS) {
 	const char *string;
@@ -1030,81 +1048,142 @@ _put_Range_UINT8(CONFIG_PUT_ARGS) {
 /* generic int getter */
 static int
 _get_INT(CONFIG_GET_ARGS) {
-	char value[64];
+    char value[64];
+    float    rvalue = 0;
 
-	switch (dpd->DataType) {
-	case PTP_DTC_UINT32:
-		sprintf (value, "%u", dpd->CurrentValue.u32 );
-		break;
-	case PTP_DTC_INT32:
-		sprintf (value, "%d", dpd->CurrentValue.i32 );
-		break;
-	case PTP_DTC_UINT16:
-		sprintf (value, "%u", dpd->CurrentValue.u16 );
-		break;
-	case PTP_DTC_INT16:
-		sprintf (value, "%d", dpd->CurrentValue.i16 );
-		break;
-	case PTP_DTC_UINT8:
-		sprintf (value, "%u", dpd->CurrentValue.u8 );
-		break;
-	case PTP_DTC_INT8:
-		sprintf (value, "%d", dpd->CurrentValue.i8 );
-		break;
-	default:
-		sprintf (value,_("unexpected datatype %i"),dpd->DataType);
-		return GP_ERROR;
-	}
-	gp_widget_new (GP_WIDGET_TEXT, _(menu->label), widget);
-	gp_widget_set_name (*widget, menu->name);
-	gp_widget_set_value (*widget,value);
-	return GP_OK;
+    switch (dpd->DataType) {
+    case PTP_DTC_UINT32:
+        sprintf (value, "%u", dpd->CurrentValue.u32 ); rvalue = dpd->CurrentValue.u32;
+        break;
+    case PTP_DTC_INT32:
+        sprintf (value, "%d", dpd->CurrentValue.i32 ); rvalue = dpd->CurrentValue.i32;
+        break;
+    case PTP_DTC_UINT16:
+        sprintf (value, "%u", dpd->CurrentValue.u16 ); rvalue = dpd->CurrentValue.u16;
+        break;
+    case PTP_DTC_INT16:
+        sprintf (value, "%d", dpd->CurrentValue.i16 ); rvalue = dpd->CurrentValue.i16;
+        break;
+    case PTP_DTC_UINT8:
+        sprintf (value, "%u", dpd->CurrentValue.u8 ); rvalue = dpd->CurrentValue.u8;
+        break;
+    case PTP_DTC_INT8:
+        sprintf (value, "%d", dpd->CurrentValue.i8 ); rvalue = dpd->CurrentValue.i8;
+        break;
+    default:
+        sprintf (value,_("unexpected datatype %i"),dpd->DataType);
+        return GP_ERROR;
+    }
+    if (dpd->FormFlag == PTP_DPFF_Enumeration) {
+        gp_widget_new (GP_WIDGET_RADIO, _(menu->label), widget);
+        gp_widget_set_name (*widget, menu->name);
+        gp_widget_set_value (*widget, value); /* text */
+    } else {
+        if (dpd->FormFlag == PTP_DPFF_Range) {
+            gp_widget_new (GP_WIDGET_RANGE, _(menu->label), widget);
+            gp_widget_set_name (*widget, menu->name);
+            gp_widget_set_value (*widget, &rvalue); /* float */
+        } else {
+            gp_widget_new (GP_WIDGET_TEXT, _(menu->label), widget);
+            gp_widget_set_name (*widget, menu->name);
+            gp_widget_set_value (*widget, value); /* text */
+        }
+    }
+
+    if (dpd->FormFlag == PTP_DPFF_Enumeration) {
+        int i;
+
+        for (i=0;i<dpd->FORM.Enum.NumberOfValues;i++) {
+            switch (dpd->DataType) {
+            case PTP_DTC_UINT32:    sprintf (value, "%u", dpd->FORM.Enum.SupportedValue[i].u32 ); break;
+            case PTP_DTC_INT32:    sprintf (value, "%d", dpd->FORM.Enum.SupportedValue[i].i32 ); break;
+            case PTP_DTC_UINT16:    sprintf (value, "%u", dpd->FORM.Enum.SupportedValue[i].u16 ); break;
+            case PTP_DTC_INT16:    sprintf (value, "%d", dpd->FORM.Enum.SupportedValue[i].i16 ); break;
+            case PTP_DTC_UINT8:    sprintf (value, "%u", dpd->FORM.Enum.SupportedValue[i].u8  ); break;
+            case PTP_DTC_INT8:    sprintf (value, "%d", dpd->FORM.Enum.SupportedValue[i].i8  ); break;
+            default: sprintf (value,_("unexpected datatype %i"),dpd->DataType); return GP_ERROR;
+            }
+            gp_widget_add_choice (*widget,value);
+        }
+    }
+    if (dpd->FormFlag == PTP_DPFF_Range) {
+        float b = 0, t = 0, s = 0;
+
+#define X(type,u) case type: b = (float)dpd->FORM.Range.MinimumValue.u; t = (float)dpd->FORM.Range.MaximumValue.u; s = (float)dpd->FORM.Range.StepSize.u; break;
+        switch (dpd->DataType) {
+        X(PTP_DTC_UINT32,u32)
+        X(PTP_DTC_INT32,i32)
+        X(PTP_DTC_UINT16,u16)
+        X(PTP_DTC_INT16,i16)
+        X(PTP_DTC_UINT8,u8)
+        X(PTP_DTC_INT8,i8)
+        }
+#undef X
+        gp_widget_set_range (*widget, b, t, s);
+    }
+    return GP_OK;
 }
 
 static int
 _put_INT(CONFIG_PUT_ARGS) {
-	char *value;
-	unsigned int u;
-	int i;
+    if (dpd->FormFlag == PTP_DPFF_Range) {
+        float f;
 
-	CR (gp_widget_get_value(widget, &value));
+        CR (gp_widget_get_value(widget, &f));
+        switch (dpd->DataType) {
+        case PTP_DTC_UINT32:    propval->u32 = f; break;
+        case PTP_DTC_INT32:    propval->i32 = f; break;
+        case PTP_DTC_UINT16:    propval->u16 = f; break;
+        case PTP_DTC_INT16:    propval->i16 = f; break;
+        case PTP_DTC_UINT8:    propval->u8 = f; break;
+        case PTP_DTC_INT8:    propval->i8 = f; break;
+        }
+        return GP_OK;
+    } else {
+        char *value;
+        unsigned int u;
+        int i;
 
-	switch (dpd->DataType) {
-	case PTP_DTC_UINT32:
-	case PTP_DTC_UINT16:
-	case PTP_DTC_UINT8:
-		C_PARAMS (1 == sscanf (value, "%u", &u ));
-		break;
-	case PTP_DTC_INT32:
-	case PTP_DTC_INT16:
-	case PTP_DTC_INT8:
-		C_PARAMS (1 == sscanf (value, "%d", &i ));
-		break;
-	default:
-		return GP_ERROR;
-	}
-	switch (dpd->DataType) {
-	case PTP_DTC_UINT32:
-		propval->u32 = u;
-		break;
-	case PTP_DTC_INT32:
-		propval->i32 = i;
-		break;
-	case PTP_DTC_UINT16:
-		propval->u16 = u;
-		break;
-	case PTP_DTC_INT16:
-		propval->i16 = i;
-		break;
-	case PTP_DTC_UINT8:
-		propval->u8 = u;
-		break;
-	case PTP_DTC_INT8:
-		propval->i8 = i;
-		break;
-	}
-	return GP_OK;
+        CR (gp_widget_get_value(widget, &value));
+
+        switch (dpd->DataType) {
+        case PTP_DTC_UINT32:
+        case PTP_DTC_UINT16:
+        case PTP_DTC_UINT8:
+            C_PARAMS (1 == sscanf (value, "%u", &u ));
+            break;
+        case PTP_DTC_INT32:
+        case PTP_DTC_INT16:
+        case PTP_DTC_INT8:
+            C_PARAMS (1 == sscanf (value, "%d", &i ));
+            break;
+        default:
+            return GP_ERROR;
+        }
+        switch (dpd->DataType) {
+        case PTP_DTC_UINT32:
+            propval->u32 = u;
+            break;
+        case PTP_DTC_INT32:
+            propval->i32 = i;
+            break;
+        case PTP_DTC_UINT16:
+            propval->u16 = u;
+            break;
+        case PTP_DTC_INT16:
+            propval->i16 = i;
+            break;
+        case PTP_DTC_UINT8:
+            propval->u8 = u;
+            break;
+        case PTP_DTC_INT8:
+            propval->i8 = i;
+            break;
+        }
+    }
+    return GP_OK;
 }
+
 
 
 static int
@@ -1399,32 +1478,6 @@ static struct deviceproptableu16 fuji_releasemode[] = {
 	{ N_("Mup Mirror up"),		5,	PTP_VENDOR_FUJI },
 };
 GENERIC16TABLE(Fuji_ReleaseMode,fuji_releasemode)
-
-static int
-_get_ImageSize(CONFIG_GET_ARGS) {
-	int j;
-
-	if (!(dpd->FormFlag & PTP_DPFF_Enumeration))
-		return(GP_ERROR);
-	if (dpd->DataType != PTP_DTC_STR)
-		return(GP_ERROR);
-	gp_widget_new (GP_WIDGET_RADIO, _(menu->label), widget);
-	gp_widget_set_name (*widget, menu->name);
-	for (j=0;j<dpd->FORM.Enum.NumberOfValues; j++) {
-		gp_widget_add_choice (*widget,dpd->FORM.Enum.SupportedValue[j].str);
-	}
-	gp_widget_set_value (*widget,dpd->CurrentValue.str);
-	return GP_OK;
-}
-
-static int
-_put_ImageSize(CONFIG_PUT_ARGS) {
-	char *value;
-
-	CR (gp_widget_get_value(widget, &value));
-	C_MEM (propval->str = strdup (value));
-	return(GP_OK);
-}
 
 static int
 _get_ExpCompensation(CONFIG_GET_ARGS) {
@@ -2863,6 +2916,72 @@ _put_ExpTime(CONFIG_PUT_ARGS)
 	return (GP_OK);
 }
 
+
+static int
+_get_Video_Framerate(CONFIG_GET_ARGS) {
+   char        buf[20];
+
+   if (dpd->DataType != PTP_DTC_UINT32)
+       return GP_ERROR;
+
+   if (dpd->FormFlag == PTP_DPFF_Enumeration) {
+       gp_widget_new (GP_WIDGET_RADIO, _(menu->label), widget);
+       /* value will be set below */
+   } else {
+       if (dpd->FormFlag == PTP_DPFF_Range) {
+           gp_widget_new (GP_WIDGET_RANGE, _(menu->label), widget);
+           float val = dpd->CurrentValue.u32 / 1000000.0;
+           gp_widget_set_value (*widget, &val);
+       } else {
+           gp_widget_new (GP_WIDGET_TEXT, _(menu->label), widget);
+           sprintf (buf, "%0.4f", (1.0*dpd->CurrentValue.u32) / 1000000.0);
+           gp_widget_set_value (*widget, buf);
+       }
+   }
+
+   gp_widget_set_name (*widget, menu->name);
+
+   if (dpd->FormFlag == PTP_DPFF_Enumeration) {
+       int        i;
+
+       for (i=0;i<dpd->FORM.Enum.NumberOfValues; i++) {
+           sprintf (buf,"%0.4f", (1.0*dpd->FORM.Enum.SupportedValue[i].u32)/1000000.0);
+           gp_widget_add_choice (*widget,buf);
+           if (dpd->FORM.Enum.SupportedValue[i].u32 == dpd->CurrentValue.u32)
+               gp_widget_set_value (*widget,buf);
+       }
+   }
+   if (dpd->FormFlag == PTP_DPFF_Range) {
+       float b, t, s;
+
+       b = (1.0*dpd->FORM.Range.MinimumValue.u32) / 1000000.0;
+       t = (1.0*dpd->FORM.Range.MaximumValue.u32) / 1000000.0;
+       s = (1.0*dpd->FORM.Range.StepSize.u32) / 1000000.0;
+       gp_widget_set_range (*widget, b, t, s);
+   }
+   return GP_OK;
+}
+
+static int
+_put_Video_Framerate(CONFIG_PUT_ARGS)
+{
+   float        val;
+   char        *value;
+
+   if (dpd->FormFlag == PTP_DPFF_Range) {
+       CR (gp_widget_get_value (widget, &val));
+   } else {
+       CR (gp_widget_get_value (widget, &value));
+
+       if (!sscanf(value,_("%f"),&val)) {
+           GP_LOG_E ("failed to parse: %s", value);
+           return GP_ERROR;
+       }
+   }
+   propval->u32 = val * 1000000;
+   return GP_OK;
+}
+
 static int
 _get_Sharpness(CONFIG_GET_ARGS) {
 	int i, min, max, t;
@@ -3595,6 +3714,60 @@ _put_FocalLength(CONFIG_PUT_ARGS) {
 	}
 	propval->u32 = newval;
 	return GP_OK;
+}
+
+static int
+_get_VideoFormat(CONFIG_GET_ARGS) {
+   int i, valset = 0;
+   char buf[200];
+
+   if (!(dpd->FormFlag & PTP_DPFF_Enumeration))
+       return GP_ERROR;
+
+   if (dpd->DataType != PTP_DTC_UINT32)
+       return GP_ERROR;
+
+   gp_widget_new (GP_WIDGET_RADIO, _(menu->label), widget);
+   gp_widget_set_name (*widget, menu->name);
+
+   /* We use FOURCC values, which should be 4 characters always */
+
+   for (i = 0; i<dpd->FORM.Enum.NumberOfValues; i++) {
+       sprintf (buf, "%c%c%c%c",
+           (dpd->FORM.Enum.SupportedValue[i].u32     )  & 0xff,
+           (dpd->FORM.Enum.SupportedValue[i].u32 >> 8)  & 0xff,
+           (dpd->FORM.Enum.SupportedValue[i].u32 >> 16) & 0xff,
+           (dpd->FORM.Enum.SupportedValue[i].u32 >> 24) & 0xff
+       );
+       gp_widget_add_choice (*widget,buf);
+       if (dpd->CurrentValue.u32 == dpd->FORM.Enum.SupportedValue[i].u32) {
+           gp_widget_set_value (*widget, buf);
+           valset = 1;
+       }
+   }
+   if (!valset) {
+       sprintf (buf, "%c%c%c%c",
+           (dpd->CurrentValue.u32     )  & 0xff,
+           (dpd->CurrentValue.u32 >> 8)  & 0xff,
+           (dpd->CurrentValue.u32 >> 16) & 0xff,
+           (dpd->CurrentValue.u32 >> 24) & 0xff
+       );
+       sprintf (buf, _("%d mm"), dpd->CurrentValue.u16);
+       gp_widget_set_value (*widget, buf);
+   }
+   return GP_OK;
+}
+
+static int
+_put_VideoFormat(CONFIG_PUT_ARGS) {
+   const unsigned char *value_str;
+
+   CR (gp_widget_get_value (widget, &value_str));
+   if (strlen((char*)value_str) < 4)
+       return GP_ERROR_BAD_PARAMETERS;
+   /* we could check if we have it in the ENUM */
+   propval->u32 = value_str[0] | (value_str[1] << 8) | (value_str[2] << 16) | (value_str[3] << 24);
+   return GP_OK;
 }
 
 static int
@@ -8135,7 +8308,7 @@ static struct submenu image_settings_menu[] = {
 	{ N_("Image Format"),           "imageformat",          PTP_DPC_FUJI_Quality,                   PTP_VENDOR_FUJI,    PTP_DTC_UINT16, _get_Fuji_ImageFormat,          _put_Fuji_ImageFormat },
 	{ N_("Image Format"),           "imageformat",          0,					PTP_VENDOR_PANASONIC,PTP_DTC_UINT16, _get_Panasonic_ImageFormat,    _put_Panasonic_ImageFormat },
 	{ N_("Image Format Ext HD"),    "imageformatexthd",     PTP_DPC_CANON_EOS_ImageFormatExtHD,     PTP_VENDOR_CANON,   PTP_DTC_UINT16, _get_Canon_EOS_ImageFormat,     _put_Canon_EOS_ImageFormat },
-	{ N_("Image Size"),             "imagesize",            PTP_DPC_ImageSize,                      0,                  PTP_DTC_STR,    _get_ImageSize,                 _put_ImageSize },
+    { N_("Image Size"),             "imagesize",            PTP_DPC_ImageSize,                      0,                  PTP_DTC_STR,    _get_STR_ENUMList,              _put_STR },
 	{ N_("Image Size"),             "imagesize",            PTP_DPC_NIKON_1_ImageSize,              PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon1_ImageSize,          _put_Nikon1_ImageSize },
 	{ N_("Image Size"),             "imagesize",            PTP_DPC_SONY_ImageSize,                 PTP_VENDOR_SONY,    PTP_DTC_UINT8,  _get_Sony_ImageSize,            _put_Sony_ImageSize },
 	{ N_("Image Size"),             "imagesize",            PTP_DPC_CANON_ImageSize,                PTP_VENDOR_CANON,   PTP_DTC_UINT8,  _get_Canon_Size,                _put_Canon_Size },
@@ -8164,7 +8337,16 @@ static struct submenu image_settings_menu[] = {
 	{ N_("Color Space"),            "colorspace",           PTP_DPC_NIKON_ColorSpace,               PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_ColorSpace,          _put_Nikon_ColorSpace },
 	{ N_("Color Space"),            "colorspace",           PTP_DPC_CANON_EOS_ColorSpace,           PTP_VENDOR_CANON,   PTP_DTC_UINT16, _get_Canon_EOS_ColorSpace,      _put_Canon_EOS_ColorSpace },
 	{ N_("Auto ISO"),               "autoiso",              PTP_DPC_NIKON_ISOAuto,                  PTP_VENDOR_NIKON,   PTP_DTC_UINT8,  _get_Nikon_OnOff_UINT8,         _put_Nikon_OnOff_UINT8 },
-	{ 0,0,0,0,0,0,0 },
+    { N_("Video Format"),           "videoformat",          PTP_DPC_VideoFormat,                    0,                  PTP_DTC_UINT32, _get_VideoFormat,               _put_VideoFormat },
+     { N_("Video Resolution"),       "videoresolution",      PTP_DPC_VideoResolution,                0,                  PTP_DTC_STR   , _get_STR_ENUMList,              _put_STR },
+     { N_("Video Quality"),          "videoquality",         PTP_DPC_VideoQuality,                   0,                  PTP_DTC_UINT16, _get_INT,                       _put_INT },
+    { N_("Video Framerate"),        "videoframerate",       PTP_DPC_VideoFrameRate,                 0,                  PTP_DTC_UINT32, _get_Video_Framerate,           _put_Video_Framerate },
+     { N_("Video Contrast"),         "videocontrast",        PTP_DPC_VideoContrast,                  0,                  PTP_DTC_UINT32, _get_INT,                       _put_INT },
+     { N_("Video Brightness"),       "videobrightness",      PTP_DPC_VideoBrightness,                0,                  PTP_DTC_UINT32, _get_INT,                       _put_INT },
+     { N_("Audio Bitrate"),          "audiobitrate",         PTP_DPC_AudioBitrate,                   0,                  PTP_DTC_UINT32, _get_INT,                       _put_INT },
+     { N_("Audio Sampling Rate"),    "audiosamplingrate",    PTP_DPC_AudioSamplingRate,              0,                  PTP_DTC_UINT32, _get_INT,                       _put_INT },
+     { N_("Audio Bit per Sample"),   "audiobitpersample",    PTP_DPC_AudioBitPerSample,              0,                  PTP_DTC_UINT16, _get_INT,                       _put_INT },
+    { 0,0,0,0,0,0,0 },
 };
 
 static struct submenu capture_settings_menu[] = {
