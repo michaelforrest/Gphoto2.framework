@@ -344,7 +344,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 	if (	(	(di->VendorExtensionID == PTP_VENDOR_MICROSOFT)  || 
 			(di->VendorExtensionID == PTP_VENDOR_MTP)
 		) &&
-		(camera->port->type == GP_PORT_USB) &&
+		(camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
 		(a.usb_vendor == 0x4a9)
 	) {
 		/*camera->pl->bugs |= PTP_MTP;*/
@@ -355,7 +355,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 	if (	(	(di->VendorExtensionID == PTP_VENDOR_MICROSOFT) ||
 			(di->VendorExtensionID == PTP_VENDOR_MTP)
 		) &&
-		(camera->port->type == GP_PORT_USB) &&
+		(camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
 		(a.usb_vendor == 0x4b0)
 	) {
 		/*camera->pl->bugs |= PTP_MTP;*/
@@ -364,7 +364,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 
 	/* Fuji S5 Pro mostly, make its vendor set available. */
 	if (	(di->VendorExtensionID == PTP_VENDOR_MICROSOFT) &&
-		(camera->port->type == GP_PORT_USB) &&
+		(camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
 		(a.usb_vendor == 0x4cb) &&
 		strstr(di->VendorExtensionDesc,"fujifilm.co.jp: 1.0;")
 	) {
@@ -3102,7 +3102,7 @@ enable_liveview:
 				C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
 
 			/* wait up to 1 second */
-			C_PTP_REP_MSG (nikon_wait_busy(params,20,1000), _("Nikon enable liveview failed"));
+			C_PTP_REP_MSG (nikon_wait_busy(params,20,2000), _("Nikon enable liveview failed"));
 			params->inliveview = 1;
 			firstimage = 1;
 		}
@@ -3112,7 +3112,7 @@ enable_liveview:
 			if ((ret != PTP_RC_OK) && (ret != PTP_RC_DeviceBusy))
 				C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
 
-			C_PTP_REP_MSG (nikon_wait_busy(params,20,1000), _("Nikon enable liveview failed"));
+			C_PTP_REP_MSG (nikon_wait_busy(params,20,2000), _("Nikon enable liveview failed"));
 			params->inliveview = 1;
 		}
 		tries = 20;
