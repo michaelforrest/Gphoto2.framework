@@ -242,7 +242,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 
 	/* Panasonic GH5 */
 	if (    (di->VendorExtensionID == PTP_VENDOR_PANASONIC) &&
-		(camera->port->type == GP_PORT_USB) &&
+		(camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
 		(a.usb_product == 0x2382)
 	) {
 		C_MEM (di->OperationsSupported = realloc(di->OperationsSupported,sizeof(di->OperationsSupported[0])*(di->OperationsSupported_len + 6)));
@@ -257,7 +257,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 
 	/* Panasonic hack */
 	if (	(di->VendorExtensionID == PTP_VENDOR_MICROSOFT) &&
-		(camera->port->type == GP_PORT_USB) &&
+		(camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
 		(a.usb_vendor == 0x04da)
 	) {
 		PTPPropertyValue propval;
