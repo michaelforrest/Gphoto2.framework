@@ -3078,15 +3078,18 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 		}
 		SET_CONTEXT_P(params, context);
 
-		/* Nilon V and J seem to like that */
+        
+		/* Nilon V and J seem to like that
 		if (!params->controlmode && ptp_operation_issupported(params,PTP_OC_NIKON_SetControlMode)) {
 			ret = ptp_nikon_setcontrolmode (params, 1);
-			/* FIXME: PTP_RC_NIKON_ChangeCameraModeFailed does not seem to be problematic */
-			if (ret != PTP_RC_NIKON_ChangeCameraModeFailed)
+
+         if (ret != PTP_RC_NIKON_ChangeCameraModeFailed)
 				C_PTP_REP (ret);
 			params->controlmode = 1;
 		}
-
+            */
+        
+            
 		ret = ptp_getdevicepropvalue (params, PTP_DPC_NIKON_LiveViewStatus, &value, PTP_DTC_UINT8);
 		if (ret != PTP_RC_OK)
 			value.u8 = 0;
@@ -3115,6 +3118,14 @@ enable_liveview:
 			C_PTP_REP_MSG (nikon_wait_busy(params,20,2000), _("Nikon enable liveview failed"));
 			params->inliveview = 1;
 		}
+        
+        if (firstimage)
+        {
+            value.u8 = 3;
+            if (have_prop(camera, params->deviceinfo.VendorExtensionID, PTP_DPC_NIKON_LiveViewMovieMode))
+                LOG_ON_PTP_E (ptp_setdevicepropvalue (params, PTP_DPC_NIKON_LiveViewMovieMode, &value, PTP_DTC_UINT8));
+        }
+        
 		tries = 20;
 		while (tries--) {
 			ret = ptp_nikon_get_liveview_image (params , &data, &size);
