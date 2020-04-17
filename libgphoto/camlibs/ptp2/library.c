@@ -274,6 +274,14 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 		C_PTP (ptp_getdeviceinfo (params, di));
 		return GP_OK;
 	}
+    
+    if (    (di->VendorExtensionID == PTP_VENDOR_MICROSOFT) &&
+        (camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
+        (a.usb_vendor == 0x1a98)
+    ) {
+        di->VendorExtensionID = PTP_VENDOR_GP_LEICA;
+    }
+    
 	/* XML style Olympus E series control. internal deviceInfos is encoded in XML. */
 	if (	di->Manufacturer && !strcmp(di->Manufacturer,"OLYMPUS") &&
 		(params->device_flags & DEVICE_FLAG_OLYMPUS_XML_WRAPPED)
@@ -983,23 +991,14 @@ static struct {
 	/* hanes442@icloud.com */
 	{"Sony:DSC-RX100M5 (Control)",0x054c, 0x07a3, PTP_CAP},
 
-	/* https://github.com/gphoto/libgphoto2/issues/190 */
-	{"Sony:Alpha-A6500 (Control)",0x054c, 0x07a4, PTP_CAP|PTP_CAP_PREVIEW},
-
-	/* https://sourceforge.net/p/gphoto/support-requests/127/ */
-	{"Sony:Alpha-A5000 (Control)",0x054c, 0x07c6, PTP_CAP},
-
-	/* bertrand.chambon@free.fr */
-	{"Sony:Alpha-A68 (Control)",  0x054c, 0x079b, PTP_CAP|PTP_CAP_PREVIEW},
-
-	/* https://github.com/gphoto/libgphoto2/issues/70 */
-	{"Sony:Alpha-A6300 (Control)",0x054c, 0x079c, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Elijah Parker <mail@timelapseplus.com> */
-	{"Sony:Alpha-A99 M2 (Control)", 0x054c, 0x079e, PTP_CAP|PTP_CAP_PREVIEW},
+	/* https://github.com/gphoto/libgphoto2/issues/190 */
+	{"Sony:Alpha-A6500 (Control)", 0x054c, 0x07a4, PTP_CAP|PTP_CAP_PREVIEW},
 
-	/* Anja Stock at SUSE */
-	{"Sony:DSC-RX10M3 (Control)",  	0x054c, 0x079d, PTP_CAP|PTP_CAP_PREVIEW},
+	/* Elijah Parker <mail@timelapseplus.com> */
+	/* https://sourceforge.net/p/gphoto/support-requests/127/ */
+	{"Sony:Alpha-A5000 (Control)", 0x054c, 0x07c6, PTP_CAP},
 
 	/* jackden@gmail.com */
 	{"Sony:DSC-RX100M6 (MTP)",  0x054c, 0x0830, 0},
@@ -1019,6 +1018,9 @@ static struct {
 	/* https://sourceforge.net/p/gphoto/feature-requests/456/ */
 	{"Sony:Alpha-A7S (MTP)",      0x054c, 0x08e2, 0},
 
+	/* David Farrier <farrier@iglou.com> */
+	{"Sony:RX100M3 (MTP)",        0x054c, 0x08e3, 0},
+
 	/* Markus Oertel */
 	{"Sony:Alpha-A5100 (MTP)",    0x054c, 0x08e7, 0},
 
@@ -1034,6 +1036,9 @@ static struct {
 
 	/* Nick Clarke <nick.clarke@gmail.com> */
 	{"Sony:Alpha-A77 M2 (Control)", 0x054c, 0x0953, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* Elijah Parker <mail@timelapseplus.com> */
+	{"Sony:Alpha-A7s (Control)", 0x054c, 0x0954, PTP_CAP},
 
 	/* Markus Oertel */
 	/* Preview confirmed by Adrian Schroeter, preview might need the firmware getting updated */
@@ -1058,10 +1063,10 @@ static struct {
 	{"Sony:Alpha-A7r II (Control)",		0x054c, 0x0a6b, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Andre Crone <andre@elysia.nl> */
-	{"Sony:DSC-RX100M4",          		0x054c, 0x0a6d, 0},
+	{"Sony:DSC-RX100M4",          		0x054c, 0x0a6d, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Andre Crone <andre@elysia.nl>, adjusted */
-    {"Sony:Alpha-A7S II (Control)",        0x054c,0x0a71, PTP_CAP|PTP_CAP_PREVIEW},
+	{"Sony:Alpha-A7S II (Control)",		0x054c,0x0a71, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Demo7up <demo7up@gmail.com> */
 	{"Sony:UMC-R10C",			0x054c,0x0a79, 0},
@@ -1083,19 +1088,24 @@ static struct {
 	{"Sony:DSC-RX0 (PC Control)",		0x054c, 0x0c32, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Elijah Parker, mail@timelapseplus.com */
+	/* https://github.com/gphoto/libgphoto2/issues/230 */
 	{"Sony:Alpha-A7r III (PC Control)",	0x054c, 0x0c33, PTP_CAP|PTP_CAP_PREVIEW}, /* FIXME: crosscheck */
 	{"Sony:Alpha-A7 III (PC Control)",	0x054c, 0x0c34, PTP_CAP|PTP_CAP_PREVIEW}, /* FIXME: crosscheck */
 
 	/* jackden@gmail.com */
 	{"Sony:DSC-RX100M6 (PC Control)",  	0x054c, 0x0c38, PTP_CAP|PTP_CAP_PREVIEW},
 
+	/* https://github.com/gphoto/libgphoto2/issues/419 */
+	{"Sony:DSC RX0 II (PC Control)",	0x054c, 0x0ca6, PTP_CAP|PTP_CAP_PREVIEW},
+	/* orbital sailor <gamerdude1080@hotmail.com> */
+	{"Sony:ILCE-6400 (PC Control)",		0x054c, 0x0caa, PTP_CAP|PTP_CAP_PREVIEW},
 	/* Mikael Ståldal <mikael@staldal.nu> */
 	{"Sony:DSC-RX100M5A (MTP)",		0x054c, 0x0cb1, 0},
 	{"Sony:DSC-RX100M5A (PC Control)",	0x054c, 0x0cb2, PTP_CAP|PTP_CAP_PREVIEW},
 
-	/* https://github.com/gphoto/libgphoto2/issues/230 */
 	/* Elijah Parker, mail@timelapseplus.com */
-	{"Sony:Alpha-A7R III (Control)", 0x054c,0x0c33, PTP_CAP|PTP_CAP_PREVIEW},
+	{"Sony:DSC-A7r IV (Control)",		0x054c, 0x0ccc, PTP_CAP|PTP_CAP_PREVIEW},
+
 
 	/* Nikon Coolpix 2500: M. Meissner, 05 Oct 2003 */
 	{"Nikon:Coolpix 2500 (PTP mode)", 0x04b0, 0x0109, 0},
@@ -1127,7 +1137,7 @@ static struct {
 	/* Nikon Coolpix 2200 */
 	{"Nikon:Coolpix 2200 (PTP mode)", 0x04b0, 0x0122, PTP_CAP|PTP_NIKON_BROKEN_CAP},
 
-	/* Jonathan Marten <jonathanmarten@users.sf.net> 
+	/* Jonathan Marten <jonathanmarten@users.sf.net>
 	 * https://sourceforge.net/p/gphoto/bugs/968/ */
 	{"Nikon:Coolpix 2200v1.1 (PTP mode)", 0x04b0, 0x0123, PTP_CAP|PTP_NO_CAPTURE_COMPLETE},
 
@@ -1184,6 +1194,8 @@ static struct {
 	{"Nikon:Coolpix S60 (PTP mode)",  0x04b0, 0x0171, 0},
 	/* Mike Strickland <livinwell@georgianatives.net> */
 	{"Nikon:Coolpix P90 (PTP mode)",  0x04b0, 0x0173, 0},
+	/* https://github.com/gphoto/gphoto2/issues/214 */
+	{"Nikon:Coolpix L100 (PTP mode)", 0x04b0, 0x0174, PTP_CAP|PTP_NIKON_BROKEN_CAP},
 	/* Christoph Muehlmann <c.muehlmann@nagnag.de> */
 	{"Nikon:Coolpix S220 (PTP mode)", 0x04b0, 0x0177, PTP_CAP|PTP_NIKON_BROKEN_CAP},
 	/* */
@@ -1259,7 +1271,7 @@ static struct {
 
 	/* t.ludewig@gmail.com */
 	/* N CP A seems capture capable, but does not list vendor commands */
-	/* Reports 0x400d aka CaptureComplete event ... but has no 
+	/* Reports 0x400d aka CaptureComplete event ... but has no
 	 * vendor commands? yeah right ... */
 	/* It might be similar to the 1? lets try ... Marcus 20140706 */
 	{"Nikon:Coolpix A (PTP mode)",	  0x04b0, 0x0226, PTP_CAP|PTP_NIKON_1}, /* PTP_CAP */
@@ -1271,7 +1283,7 @@ static struct {
 	{"Nikon:Coolpix P7800 (PTP mode)", 0x04b0, 0x0229, 0},
 
 	/* t.ludewig@gmail.com */
-	/* Also reports 0x400d aka CaptureComplete event ... but has no 
+	/* Also reports 0x400d aka CaptureComplete event ... but has no
 	 * vendor commands? yeah right... */
 	{"Nikon:Coolpix P520 (PTP mode)", 0x04b0, 0x0228, 0}, /* PTP_CAP */
 
@@ -1306,7 +1318,10 @@ static struct {
 	/* Mdasoh Kyaeppd at IRC */
 	{"Nikon:Coolpix S6300 (PTP mode)",0x04b0, 0x032c, PTP_CAP},
 	/* sakax <sakamotox@gmail.com> */
-	{"Nikon:Coolpix S2600 (PTP mode)",0x04b0, 0x032d, PTP_CAP},
+	{"Nikon:Coolpix S2600 (PTP mode)",0x04b0, 0x032d, PTP_CAP|PTP_NIKON_BROKEN_CAP},
+
+	/* dougvj@gmail.com */
+	{"Nikon:Coolpix L810  (PTP mode)",0x04b0, 0x032f, PTP_CAP},
 
 	/* Borja Latorre <borja.latorre@csic.es> */
 	{"Nikon:Coolpix S3200",		  0x04b0, 0x0334, PTP_CAP},
@@ -1345,6 +1360,9 @@ static struct {
 
 	/* https://sourceforge.net/p/libmtp/bugs/1743/ */
 	{"Nikon:Coolpix L340", 	  	  0x04b0, 0x0361, PTP_CAP},
+
+	/* Krystal Puga <krystalvp@gmail.com> */
+	{"Nikon:KeyMission 170", 	  0x04b0, 0x0364, PTP_CAP},
 
 	/* Nikon D100 has a PTP mode: westin 2002.10.16 */
 	{"Nikon:DSC D100 (PTP mode)",     0x04b0, 0x0402, 0},
@@ -1471,11 +1489,11 @@ static struct {
 
 	/* Marcus Meissner */
 	{"Nikon:Z6",                	  0x04b0, 0x0443, PTP_CAP|PTP_CAP_PREVIEW},
-	
-    /* Daniel Baertschi <daniel@avisec.ch> */
-     {"Nikon:Z50",                      0x04b0, 0x0444, PTP_CAP|PTP_CAP_PREVIEW},
-    
-    /* Schreiber, Steve via Gphoto-devel */
+
+	/* Daniel Baertschi <daniel@avisec.ch> */
+	{"Nikon:Z50",                	  0x04b0, 0x0444, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* Schreiber, Steve via Gphoto-devel */
 	{"Nikon:DSC D3500",		  0x04b0, 0x0445, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* http://sourceforge.net/tracker/?func=detail&aid=3536904&group_id=8874&atid=108874 */
@@ -1601,6 +1619,9 @@ static struct {
 	 * PTP and "normal" (i.e. Canon) mode
 	 * Canon PS G3: A. Marinichev, 20 nov 2002
 	 */
+    
+    {"Canon:EOS M200",                  0x04a9, 0x32ef, PTP_CAP|PTP_CAP_PREVIEW},
+
 	{"Canon:PowerShot S45 (PTP mode)",      0x04a9, 0x306d, PTPBUG_DELETE_SENDS_EVENT},
 		/* 0x306c is S45 in normal (canon) mode */
 	{"Canon:PowerShot G3 (PTP mode)",       0x04a9, 0x306f, PTPBUG_DELETE_SENDS_EVENT|PTP_CAP|PTP_CAP_PREVIEW},
@@ -2047,10 +2068,10 @@ static struct {
 	/* https://github.com/gphoto/libgphoto2/issues/60 */
 	/* needs dont close session */
 	{"Canon:EOS 80D",			0x04a9, 0x3294, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+    
+    {"Canon:EOS 90D",            0x04a9, 0x32ea, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
-    {"Canon:EOS 90D",			0x04a9, 0x32ea, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-
-    /* Andre Crone <andre@elysia.nl */
+	/* Andre Crone <andre@elysia.nl */
 	{"Canon:EOS 5DS",			0x04a9, 0x3295, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 	/* Nykhedimus S <nykhedimus@gmail.com> */
 	{"Canon:EOS M3",			0x04a9, 0x3299, PTPBUG_DELETE_SENDS_EVENT|PTP_CAP|PTP_CAP_PREVIEW},
@@ -2059,11 +2080,11 @@ static struct {
 	/* pravsripad@gmail.com */
 	{"Canon:PowerShot SX520 HS",		0x04a9, 0x329b, PTPBUG_DELETE_SENDS_EVENT},
 
-    /* Sascha Wolff <sascha.wolff1@gmail.com> */
-     {"Canon:PowerShot SX530 HS",        0x04a9, 0x329f, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-
 	/* sparkycoladev@gmail.com */
 	{"Canon:PowerShot G7 X",		0x04a9, 0x329d, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
+	/* Sascha Wolff <sascha.wolff1@gmail.com> */
+	{"Canon:PowerShot SX530 HS",		0x04a9, 0x329f, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
 	/* Marcus Meissner <marcus@jet.franken.de> */
 	{"Canon:EOS M10",			0x04a9, 0x32a0, PTP_CAP|PTP_CAP_PREVIEW},
@@ -2108,9 +2129,9 @@ static struct {
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:SX 720HS",			0x04a9, 0x32c2, PTP_CAP|PTP_CAP_PREVIEW},
 
-    /* Sagufta Kapadia <sagufta.kapadia@gmail.com> */
-    {"Canon:SX 620HS",			0x04a9, 0x32c3, PTP_CAP|PTP_CAP_PREVIEW},
-    
+	/* Sagufta Kapadia <sagufta.kapadia@gmail.com> */
+	{"Canon:SX 620HS",			0x04a9, 0x32c3, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* https://github.com/gphoto/libgphoto2/issues/235 */
 	{"Canon:EOS M6",			0x04a9, 0x32c5, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -2131,16 +2152,8 @@ static struct {
 	/* "Lacy Rhoades" <lacy@colordeaf.net> */
 	{"Canon:EOS 200D",          		0x04a9, 0x32cc, PTP_CAP|PTP_CAP_PREVIEW},
 
-    /* Roland Förg <roland.foerg@arcor.de> */
-    {"Canon:EOS 250D",			0x04a9, 0x32e9, PTP_CAP|PTP_CAP_PREVIEW},
-    
-    /* "Lacy Rhoades" <lacy@colordeaf.net> */
-    {"Canon:EOS 200D II",          		0x04a9, 0x32e9, PTP_CAP|PTP_CAP_PREVIEW},
-    
 	/* Geza Lore <gezalore@gmail.com> */
 	{"Canon:EOS M100",          		0x04a9, 0x32d1, PTP_CAP|PTP_CAP_PREVIEW},
-
-    {"Canon:EOS M200",                  0x04a9, 0x32ef, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* https://github.com/gphoto/libgphoto2/issues/58 */
 	{"Canon:EOS M50",          		0x04a9, 0x32d2, PTP_CAP|PTP_CAP_PREVIEW},
@@ -2148,30 +2161,32 @@ static struct {
 	/* Marcus Meissner */
 	{"Canon:Digital IXUS 185",          	0x04a9, 0x32d4, 0},
 
-	/* Elijah Parker <mail@timelapseplus.com> */
-	{"Canon:EOS R",          		0x04a9, 0x32da, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+	/* Slavko Kocjancic <eslavko@gmail.com> */
+	{"Canon:Digital PowerShot SX730IS",	0x04a9, 0x32d6, PTP_CAP|PTP_CAP_PREVIEW},
 
-    /* Elijah Parker <mail@timelapseplus.com> */
-    // same id as "R2"
-    {"Canon:EOS RP",          		0x04a9, 0x32e2, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-    
-	/* https://github.com/gphoto/libgphoto2/issues/316 */
-	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
-
-    /* https://github.com/gphoto/gphoto2/issues/247, from logfile */
-    {"Canon:EOS 1500D",          		0x04a9, 0x32e1, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-
-    /*Marc Wetli <wetli@egoshooting.com> */
-    {"Canon:EOS M6 Mark II",		0x04a9, 0x32e7, PTP_CAP|PTP_CAP_PREVIEW},
-
-    /* Slavko Kocjancic <eslavko@gmail.com> */
-     {"Canon:Digital PowerShot SX730IS",    0x04a9, 0x32d6, PTP_CAP|PTP_CAP_PREVIEW},
-    
 	/* Jasem Mutlaq <mutlaqja@ikarustech.com> */
 	{"Canon:EOS 4000D",			0x04a9, 0x32d9, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
 
+	/* Elijah Parker <mail@timelapseplus.com> */
+	{"Canon:EOS R",          		0x04a9, 0x32da, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
 	/* Christian Muehlhaeuser <muesli@gmail.com> */
 	{"Canon:EOS 2000D",			0x04a9, 0x32e1, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
+
+	/* https://github.com/gphoto/gphoto2/issues/247, from logfile */
+	{"Canon:EOS 1500D",          		0x04a9, 0x32e1, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
+	/* from timelapse-VIEW */
+	{"Canon:EOS R2",          		0x04a9, 0x32e2, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
+	/* https://github.com/gphoto/libgphoto2/issues/316 */
+	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/*Marc Wetli <wetli@egoshooting.com> */
+	{"Canon:EOS M6 Mark II",		0x04a9, 0x32e7, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* Roland Förg <roland.foerg@arcor.de> */
+	{"Canon:EOS 250D",			0x04a9, 0x32e9, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Konica-Minolta PTP cameras */
 	{"Konica-Minolta:DiMAGE A2 (PTP mode)",        0x132b, 0x0001, 0},
@@ -2291,12 +2306,21 @@ static struct {
 	{"Fuji:GFX 50 S",			0x04cb, 0x02d3, PTP_CAP},
 	/* https://github.com/gphoto/libgphoto2/issues/170 */
 	{"Fuji:Fujifilm X-T20",			0x04cb, 0x02d4, 0},
+	/* Рустем Валиев <rustvt@gmail.com> */
+	{"Fuji:Fujifilm X-A5",			0x04cb, 0x02d5, 0},
+	/* Daniel Queen <dqueen510@gmail.com> */
+	/* USB Raw Converter/Backup Restore mode, firmware version 1.20 or newer */
+	{"Fuji:Fujifilm X-E3",			0x04cb, 0x02d6, PTP_CAP|PTP_CAP_PREVIEW},
 	/* https://github.com/gphoto/libgphoto2/issues/283 */
 	{"Fuji:Fujifilm X-H1",			0x04cb, 0x02d7, PTP_CAP|PTP_CAP_PREVIEW},
 	/* Seth Cohen <forwardthinking.llc@gmail.com> */
 	{"Fuji:GFX 50 R",			0x04cb, 0x02dc, PTP_CAP|PTP_CAP_PREVIEW},
 	/* Stefan Weiberg at SUSE */
 	{"Fuji:Fujifilm X-T3",			0x04cb, 0x02dd, PTP_CAP|PTP_CAP_PREVIEW},
+	/* https://github.com/gphoto/gphoto2/issues/256 */
+	{"Fuji:Fujifilm GFX100",		0x04cb, 0x02de, PTP_CAP|PTP_CAP_PREVIEW},
+	/* Bruno Filho at SUSE (currently not working with cpature, but shows variables) */
+	{"Fuji:Fujifilm X-T30",			0x04cb, 0x02e3, 0 /*PTP_CAP|PTP_CAP_PREVIEW*/},
 
 	{"Ricoh:Caplio R5 (PTP mode)",          0x05ca, 0x0110, 0},
 	{"Ricoh:Caplio GX (PTP mode)",          0x05ca, 0x0325, 0},
@@ -2383,13 +2407,13 @@ static struct {
 	/* Bernhard Wagner <me@bernhardwagner.net> */
 	{"Leica:M9",				0x1a98,	0x0002, PTP_CAP},
 
-    /* Christopher Kao <christopherkao@icloud.com> */
-     {"Leica:SL (Typ 601)",            0x1a98,    0x2041, PTP_CAP},
-    
+	/* Christopher Kao <christopherkao@icloud.com> */
+	{"Leica:SL (Typ 601)",			0x1a98,	0x2041, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* https://github.com/gphoto/libgphoto2/issues/105 */
 	{"Parrot:Sequoia",			0x19cf,	0x5039, PTP_CAP},
 
-	{"GoPro:HERO" ,				0x2672, 0x000c, 0},  
+	{"GoPro:HERO" ,				0x2672, 0x000c, 0},
 	{"GoPro:HERO4 Silver" , 		0x2672, 0x000d, 0 },
 
 	/* https://sourceforge.net/p/gphoto/support-requests/130/ */
@@ -2404,6 +2428,14 @@ static struct {
 
 	/* https://sourceforge.net/p/libmtp/feature-requests/239/ */
 	{"GoPro:HERO6 Black",			0x2672, 0x0037, 0},
+	/* Rasmus Larsson <larsson.rasmus@gmail.com> */
+	{"GoPro:HERO7 White",			0x2672, 0x0042, 0},
+	/* Marcus Meissner */
+	{"GoPro:HERO7 Silver",			0x2672, 0x0043, 0},
+	/* https://sourceforge.net/p/libmtp/feature-requests/284/ */
+	{"GoPro:HERO7 Black",			0x2672, 0x0047, 0},
+	/* https://sourceforge.net/p/libmtp/bugs/1858/ */
+	{"GoPro:HERO8 Black",			0x2672, 0x0049, 0},
 #endif
 };
 
@@ -3102,10 +3134,16 @@ enable_liveview:
 
 			ret = ptp_nikon_start_liveview (params);
 			if ((ret != PTP_RC_OK) && (ret != PTP_RC_DeviceBusy))
-				C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
-
+            {
+                C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
+            }
+            
 			/* wait up to 1 second */
-			C_PTP_REP_MSG (nikon_wait_busy(params,20,2000), _("Nikon enable liveview failed"));
+            uint16_t res = nikon_wait_busy(params,20,2000);
+            if (res)
+            {
+                C_PTP_REP_MSG (res, _("Nikon enable liveview failed"));
+            }
 			params->inliveview = 1;
 			firstimage = 1;
 		}
@@ -3113,9 +3151,15 @@ enable_liveview:
 		if (value.u8 && !params->inliveview) {
 			ret = ptp_nikon_start_liveview (params);
 			if ((ret != PTP_RC_OK) && (ret != PTP_RC_DeviceBusy))
-				C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
-
-			C_PTP_REP_MSG (nikon_wait_busy(params,20,2000), _("Nikon enable liveview failed"));
+            {
+                C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
+            }
+            
+            uint16_t res = nikon_wait_busy(params,20,2000);
+            if (res)
+            {
+                C_PTP_REP_MSG (res, _("Nikon enable liveview failed"));
+            }
 			params->inliveview = 1;
 		}
         
