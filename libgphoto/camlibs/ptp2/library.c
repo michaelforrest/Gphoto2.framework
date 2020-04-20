@@ -2584,7 +2584,7 @@ __attribute__((__format__(printf,2,0)))
 #endif
 ptp_debug_func (void *data, const char *format, va_list args)
 {
-	gp_logv (GP_LOG_DEBUG, "ptp", format, args);
+	//gp_logv (GP_LOG_DEBUG, "ptp", format, args);
 }
 
 static void
@@ -2778,7 +2778,7 @@ camera_exit (Camera *camera, GPContext *context)
 
 					ptp_check_eos_events (params);
 					while (ptp_get_one_eos_event (params, &entry)) {
-						GP_LOG_D ("missed EOS ptp type %d", entry.type);
+					//	GP_LOG_D ("missed EOS ptp type %d", entry.type);
 						if (entry.type == PTP_CANON_EOS_CHANGES_TYPE_UNKNOWN)
 							free (entry.u.info);
 					}
