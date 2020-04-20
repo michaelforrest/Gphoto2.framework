@@ -258,7 +258,7 @@ ptp_ptpicc_getresp (PTPParams* params, PTPContainer* resp)
         case 1: resp->Param1 = dtoh32a(&data[12]);
         case 0: break;
         default:
-            gp_log( GP_LOG_ERROR, "ptpicc/getresp", "response got %d parameters?", n);
+          //  gp_log( GP_LOG_ERROR, "ptpicc/getresp", "response got %d parameters?", n);
             break;
     }
     free (data);

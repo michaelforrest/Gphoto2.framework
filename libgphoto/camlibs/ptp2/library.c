@@ -325,7 +325,7 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 		GP_LOG_D ("Dumping Olympus Deviceinfo");
 
 
-		print_debug_deviceinfo (params, &newdi);
+//		print_debug_deviceinfo (params, &newdi);
 		ptp_free_DI (di);
 		memcpy (di, &newdi, sizeof(newdi));
 		return GP_OK;
@@ -3038,7 +3038,7 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 				 */
 
 				xdata = data;
-				GP_LOG_D ("total size: len=%d", size);
+			//	GP_LOG_D ("total size: len=%d", size);
 				while ((xdata-data) < size) {
 					uint32_t	len  = dtoh32a(xdata);
 					uint32_t	type = dtoh32a(xdata+4);
@@ -3046,7 +3046,7 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 					/* 4 byte len of jpeg data, 4 byte type */
 					/* JPEG blob */
 					/* stuff */
-					GP_LOG_D ("get_viewfinder_image header: len=%d type=%d", len, type);
+					//GP_LOG_D ("get_viewfinder_image header: len=%d type=%d", len, type);
 					switch (type) {
 					default:
 						if (len > (size-(xdata-data))) {
@@ -3135,14 +3135,24 @@ enable_liveview:
 			ret = ptp_nikon_start_liveview (params);
 			if ((ret != PTP_RC_OK) && (ret != PTP_RC_DeviceBusy))
             {
-                C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
+                //0xd000 was when the battery ran out
+                // D7200 returned 0xA004 when it stopped working (invalid status)
+                // 0x9000 as well
+                //0xc000 when unplugged
+                if (ret == 0xd000)
+                {
+                    // battery ran out?
+                    gp_context_error (context, _("Sorry, your Nikon battery might have run out."));
+                    return GP_ERROR_IO;
+                }
+                C_PTP_REP_MSG (ret, _("Nikon enable liveview failed 1"));
             }
             
 			/* wait up to 1 second */
             uint16_t res = nikon_wait_busy(params,20,2000);
-            if (res)
+            if (res != PTP_RC_OK)
             {
-                C_PTP_REP_MSG (res, _("Nikon enable liveview failed"));
+                C_PTP_REP_MSG (res, _("Nikon nikon_wait_busy failed"));
             }
 			params->inliveview = 1;
 			firstimage = 1;
@@ -3152,13 +3162,13 @@ enable_liveview:
 			ret = ptp_nikon_start_liveview (params);
 			if ((ret != PTP_RC_OK) && (ret != PTP_RC_DeviceBusy))
             {
-                C_PTP_REP_MSG (ret, _("Nikon enable liveview failed"));
+                C_PTP_REP_MSG (ret, _("Nikon start liveview failed 2"));
             }
             
             uint16_t res = nikon_wait_busy(params,20,2000);
             if (res)
             {
-                C_PTP_REP_MSG (res, _("Nikon enable liveview failed"));
+                C_PTP_REP_MSG (res, _("Nikon nikon_wait_busy failed 2"));
             }
 			params->inliveview = 1;
 		}
@@ -3175,21 +3185,22 @@ enable_liveview:
 			ret = ptp_nikon_get_liveview_image (params , &data, &size);
 			if (ret == PTP_RC_NIKON_NotLiveView) {
 				/* this happens on the D7000 after 14000 frames... reenable liveview */
+                gp_context_error (context, _("Nikon was not in live view..."));
 				params->inliveview = 0;
 				value.u8 = 0;
 				goto enable_liveview;
 			}
-			if (ret == PTP_RC_OK) {
+			if (ret == PTP_RC_OK && size > 8) {
 				if (firstimage) {
 					/* the first image on the S9700 is corrupted. so just skip the first image */
 					firstimage = 0;
 					free (data);
 					continue;
 				}
-				/* look for the JPEG SOI marker (0xFFD8) in data */
+				/* look for the JPEG SOI marker (0xFFD8) in data  followed by ffdb, ffe0 or ffe1 */
 				jpgStartPtr = (unsigned char*)memchr(data, 0xff, size);
-				while(jpgStartPtr && ((jpgStartPtr+1) < (data + size))) {
-					if(*(jpgStartPtr + 1) == 0xd8) { /* SOI found */
+				while(jpgStartPtr && ((jpgStartPtr+3) < (data + size))) {
+					if(*(jpgStartPtr + 1) == 0xd8 && *(jpgStartPtr + 2) == 0xff && (*(jpgStartPtr + 3) == 0xdb || *(jpgStartPtr + 3) == 0xe0 || *(jpgStartPtr + 3) == 0xe1)) { /* SOI found */
 						break;
 					} else { /* go on looking (starting at next byte) */
 						jpgStartPtr++;
@@ -3224,6 +3235,8 @@ enable_liveview:
 				gp_file_set_mtime (file, time(NULL));
 				break;
 			}
+            gp_context_error (context, _("Nikon live view error: 0x%x"), ret);
+
 			if (ret == PTP_RC_DeviceBusy) {
 				GP_LOG_D ("busy, retrying after a bit of wait, try %d", tries);
 				usleep(10*1000);
@@ -8697,7 +8710,7 @@ camera_init (Camera *camera, GPContext *context)
 
 	CR (fixup_cached_deviceinfo (camera,&params->deviceinfo));
 
-	print_debug_deviceinfo(params, &params->deviceinfo);
+//	print_debug_deviceinfo(params, &params->deviceinfo);
 
 	switch (params->deviceinfo.VendorExtensionID) {
 	case PTP_VENDOR_CANON:
@@ -8732,7 +8745,7 @@ camera_init (Camera *camera, GPContext *context)
 				   so have to reget it */
 				C_PTP (ptp_getdeviceinfo(&camera->pl->params, &camera->pl->params.deviceinfo));
 				CR (fixup_cached_deviceinfo (camera, &camera->pl->params.deviceinfo));
-				print_debug_deviceinfo(params, &params->deviceinfo);
+	//			print_debug_deviceinfo(params, &params->deviceinfo);
 			} else {
 				C_PTP (ptp_canon_eos_setremotemode(params, 1));
 			}

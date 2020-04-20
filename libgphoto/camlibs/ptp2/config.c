@@ -409,6 +409,7 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 /*		LOG_ON_PTP_E (ptp_canon_eos_requestdevicepropvalue (params, PTP_DPC_CANON_EOS_MyMenuList)); */
 /*		LOG_ON_PTP_E (ptp_canon_eos_requestdevicepropvalue (params, PTP_DPC_CANON_EOS_LensAdjustParams)); */
 	}
+    /*
 	if (ptp_operation_issupported(params, PTP_OC_CANON_EOS_GetDeviceInfoEx)) {
 		PTPCanonEOSDeviceInfo x;
 		unsigned int i;
@@ -422,7 +423,7 @@ camera_prepare_canon_eos_capture(Camera *camera, GPContext *context) {
 			GP_LOG_D ("unk: %04x", x.unk[i]);
 		ptp_free_EOS_DI (&x);
 	}
-
+     */
 	/* The new EOS occasionaly returned an empty event set ... likely because we are too fast. try again some times. */
 	C_PTP (ptp_check_eos_events (params));
 	tries = 10;
