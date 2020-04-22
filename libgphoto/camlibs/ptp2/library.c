@@ -3275,8 +3275,8 @@ enable_liveview:
 
 		/* look for the JPEG SOI marker (0xFFD8) in data */
 		jpgStartPtr = (unsigned char*)memchr(ximage, 0xff, size);
-		while(jpgStartPtr && ((jpgStartPtr+1) < (ximage + size))) {
-			if(*(jpgStartPtr + 1) == 0xd8) { /* SOI found */
+		while(jpgStartPtr && ((jpgStartPtr+3) < (ximage + size))) {
+			if(*(jpgStartPtr + 1) == 0xd8 && *(jpgStartPtr + 2) == 0xff && (*(jpgStartPtr + 3) == 0xdb || *(jpgStartPtr + 3) == 0xe0 || *(jpgStartPtr + 3) == 0xe1)) { /* SOI found */
 				break;
 			} else { /* go on looking (starting at next byte) */
 				jpgStartPtr++;
@@ -3393,9 +3393,9 @@ enable_liveview:
 		}
 		/* look for the JPEG SOI marker (0xFFD8) in data */
 		jpgStartPtr = (unsigned char*)memchr(ximage, 0xff, size);
-		while(jpgStartPtr && ((jpgStartPtr+1) < (ximage + size))) {
-			if(*(jpgStartPtr + 1) == 0xd8) { /* SOI found */
-				break;
+		while(jpgStartPtr && ((jpgStartPtr+3) < (ximage + size))) {
+            if(*(jpgStartPtr + 1) == 0xd8 && *(jpgStartPtr + 2) == 0xff && (*(jpgStartPtr + 3) == 0xdb || *(jpgStartPtr + 3) == 0xe0 || *(jpgStartPtr + 3) == 0xe1)) { /* SOI found */
+                break;
 			} else { /* go on looking (starting at next byte) */
 				jpgStartPtr++;
 				jpgStartPtr = (unsigned char*)memchr(jpgStartPtr, 0xff, ximage + size - jpgStartPtr);
