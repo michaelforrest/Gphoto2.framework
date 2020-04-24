@@ -818,7 +818,7 @@ static struct {
 	{"HP:PhotoSmart 320 (PTP mode)", 0x03f0, 0x6602, 0},
 	{"HP:PhotoSmart 720 (PTP mode)", 0x03f0, 0x6702, 0},
 	{"HP:PhotoSmart 620 (PTP mode)", 0x03f0, 0x6802, 0},
-	{"HP:PhotoSmart 735 (PTP mode)", 0x03f0, 0x6a02, 0},	
+	{"HP:PhotoSmart 735 (PTP mode)", 0x03f0, 0x6a02, 0},
 	{"HP:PhotoSmart 707 (PTP mode)", 0x03f0, 0x6b02, 0},
 	{"HP:PhotoSmart 733 (PTP mode)", 0x03f0, 0x6c02, 0},
 	{"HP:PhotoSmart 607 (PTP mode)", 0x03f0, 0x6d02, 0},
@@ -988,6 +988,20 @@ static struct {
 	/* https://github.com/gphoto/libgphoto2/issues/190 */
 	{"Sony:Alpha-A6500",	      0x054c, 0x0784, 0},
 
+	/* bertrand.chambon@free.fr */
+	{"Sony:Alpha-A68 (Control)",  0x054c, 0x079b, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* https://github.com/gphoto/libgphoto2/issues/70 */
+	{"Sony:Alpha-A6300 (Control)",0x054c, 0x079c, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* Anja Stock at SUSE */
+	{"Sony:DSC-RX10M3 (Control)",  	0x054c, 0x079d, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* Elijah Parker <mail@timelapseplus.com> */
+	{"Sony:Alpha-A99 M2 (Control)", 0x054c, 0x079e, PTP_CAP|PTP_CAP_PREVIEW},
+
+	/* Elijah Parker <mail@timelapseplus.com> */
+	{"Sony:DSC-RX100V (Control)", 0x054c, 0x07a3, PTP_CAP},
 	/* hanes442@icloud.com */
 	{"Sony:DSC-RX100M5 (Control)",0x054c, 0x07a3, PTP_CAP},
 
@@ -1064,9 +1078,6 @@ static struct {
 
 	/* Andre Crone <andre@elysia.nl> */
 	{"Sony:DSC-RX100M4",          		0x054c, 0x0a6d, PTP_CAP|PTP_CAP_PREVIEW},
-
-    // test for thaimzzz@gmail.com
-    {"Sony:DSC-RX100M7",                  0x054c, 0x0cae, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Andre Crone <andre@elysia.nl>, adjusted */
 	{"Sony:Alpha-A7S II (Control)",		0x054c,0x0a71, PTP_CAP|PTP_CAP_PREVIEW},
@@ -1413,7 +1424,7 @@ static struct {
 	/* Matthias Blaicher <blaicher@googlemail.com> */
 	{"Nikon:DSC D3s (PTP mode)",      0x04b0, 0x0426, PTP_CAP|PTP_CAP_PREVIEW},
 	/* SWPLinux IRC reporter... does not have liveview -lowend model. */
-	{"Nikon:DSC D3100 (PTP mode)",	  0x04b0, 0x0427, PTP_CAP|PTP_CAP_PREVIEW},
+	{"Nikon:DSC D3100 (PTP mode)",	  0x04b0, 0x0427, PTP_CAP},
 	/* http://sourceforge.net/tracker/?func=detail&atid=358874&aid=3140014&group_id=8874 */
 	{"Nikon:DSC D7000 (PTP mode)",    0x04b0, 0x0428, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -1622,9 +1633,6 @@ static struct {
 	 * PTP and "normal" (i.e. Canon) mode
 	 * Canon PS G3: A. Marinichev, 20 nov 2002
 	 */
-    
-    {"Canon:EOS M200",                  0x04a9, 0x32ef, PTP_CAP|PTP_CAP_PREVIEW},
-
 	{"Canon:PowerShot S45 (PTP mode)",      0x04a9, 0x306d, PTPBUG_DELETE_SENDS_EVENT},
 		/* 0x306c is S45 in normal (canon) mode */
 	{"Canon:PowerShot G3 (PTP mode)",       0x04a9, 0x306f, PTPBUG_DELETE_SENDS_EVENT|PTP_CAP|PTP_CAP_PREVIEW},
@@ -2071,9 +2079,6 @@ static struct {
 	/* https://github.com/gphoto/libgphoto2/issues/60 */
 	/* needs dont close session */
 	{"Canon:EOS 80D",			0x04a9, 0x3294, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-    
-    {"Canon:EOS 90D",            0x04a9, 0x32ea, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
-
 	/* Andre Crone <andre@elysia.nl */
 	{"Canon:EOS 5DS",			0x04a9, 0x3295, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 	/* Nykhedimus S <nykhedimus@gmail.com> */
@@ -2439,6 +2444,11 @@ static struct {
 	{"GoPro:HERO7 Black",			0x2672, 0x0047, 0},
 	/* https://sourceforge.net/p/libmtp/bugs/1858/ */
 	{"GoPro:HERO8 Black",			0x2672, 0x0049, 0},
+    
+    {"Canon:EOS 90D",            0x04a9, 0x32ea, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+    {"Canon:EOS M200",                  0x04a9, 0x32ef, PTP_CAP|PTP_CAP_PREVIEW},
+    {"Sony:DSC-RX100M7",                  0x054c, 0x0cae, PTP_CAP|PTP_CAP_PREVIEW},
+    
 #endif
 };
 
@@ -5389,7 +5399,7 @@ camera_trigger_capture (Camera *camera, GPContext *context)
 		PTPPropertyValue propval;
 
 		C_PTP_REP (ptp_check_event (params));
-		C_PTP_REP (nikon_wait_busy (params, 100, 2000)); /* lets wait 2 second */
+		C_PTP_REP (nikon_wait_busy (params, 100, 200*1000)); /* lets wait 2 second */
 		C_PTP_REP (ptp_check_event (params));
 
 		if (ptp_property_issupported (params, PTP_DPC_NIKON_LiveViewStatus)) {
