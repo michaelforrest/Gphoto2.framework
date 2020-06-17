@@ -2153,7 +2153,11 @@ static struct {
 
 	/* Viktors Berstis <gpjm@berstis.com> */
 	{"Canon:EOS Rebel T7i",			0x04a9, 0x32c9, PTP_CAP|PTP_CAP_PREVIEW},
-	/* https://github.com/gphoto/libgphoto2/issues/338 */
+	
+    /* Viktors Berstis <gpjm@berstis.com> */
+    {"Canon:EOS Rebel T8i",            0x04a9, 0x32f1, PTP_CAP|PTP_CAP_PREVIEW},
+
+    /* https://github.com/gphoto/libgphoto2/issues/338 */
 	{"Canon:EOS 800D",			0x04a9, 0x32c9, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Thomas Schaaf <thomas.schaaf@komola.de> */
