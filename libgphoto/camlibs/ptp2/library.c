@@ -1120,6 +1120,9 @@ static struct {
 	{"Sony:DSC-RX100M5A (MTP)",		0x054c, 0x0cb1, 0},
 	{"Sony:DSC-RX100M5A (PC Control)",	0x054c, 0x0cb2, PTP_CAP|PTP_CAP_PREVIEW},
 
+    //test
+    {"Sony:ZV-1",    0x054c, 0x0c44, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* Elijah Parker, mail@timelapseplus.com */
 	{"Sony:DSC-A7r IV (Control)",		0x054c, 0x0ccc, PTP_CAP|PTP_CAP_PREVIEW},
 
