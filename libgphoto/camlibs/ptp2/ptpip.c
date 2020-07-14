@@ -28,6 +28,11 @@
  *
  * Nikon WU-1* adapters might use 0011223344556677 as GUID always...
  */
+
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+
 #define _DEFAULT_SOURCE
 #include "config.h"
 
@@ -44,8 +49,6 @@
 #ifdef WIN32
 # include <winsock.h>
 #else
-# include <sys/socket.h>
-# include <netinet/in.h>
 #endif
 
 #include <gphoto2/gphoto2-library.h>

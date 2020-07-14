@@ -21,13 +21,14 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "config.h"
 #include <gphoto2/gphoto2-abilities-list.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+
 
 #include <ltdl.h>
 

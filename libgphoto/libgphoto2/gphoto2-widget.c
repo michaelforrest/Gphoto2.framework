@@ -20,11 +20,11 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02110-1301  USA
  */
+#include <string.h>
 #include "config.h"
 #include <gphoto2/gphoto2-widget.h>
 
 #include <stdlib.h>
-#include <string.h>
 
 #include <gphoto2/gphoto2-result.h>
 #include <gphoto2/gphoto2-port-log.h>

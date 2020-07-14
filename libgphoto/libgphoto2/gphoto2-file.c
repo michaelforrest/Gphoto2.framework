@@ -24,16 +24,17 @@
  * This file contains internal functions. Use of these functions from
  * external software modules is considered <strong>deprecated</strong>.
  */
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #define _POSIX_SOURCE
 #define _DEFAULT_SOURCE
+
 
 #include "config.h"
 #include <gphoto2/gphoto2-file.h>
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <utime.h>
 

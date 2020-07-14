@@ -22,12 +22,12 @@
  */
 #define _GNU_SOURCE
 
+#include <string.h>
 #include "config.h"
 
 #include <gphoto2/gphoto2-port-info-list.h>
 
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
 #ifdef HAVE_REGEX
 #include <regex.h>
