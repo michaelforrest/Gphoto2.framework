@@ -606,6 +606,9 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 			di->OperationsSupported_len += opcodes;
 			free (xprops);
 			C_PTP (ptp_sony_sdioconnect (&camera->pl->params, 3, 0, 0));
+            
+            /* remember for sony zv-1 hack */
+             params->starttime = time_now();
 		}
 	}
 #if 0 /* Marcus: not regular ptp properties, not queryable via getdevicepropertyvalue */
@@ -1126,6 +1129,7 @@ static struct {
 	/* Elijah Parker, mail@timelapseplus.com */
 	{"Sony:DSC-A7r IV (Control)",		0x054c, 0x0ccc, PTP_CAP|PTP_CAP_PREVIEW},
 
+    {"Canon:PowerShot SX70 HS",        0x04a9, 0x32ee, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Nikon Coolpix 2500: M. Meissner, 05 Oct 2003 */
 	{"Nikon:Coolpix 2500 (PTP mode)", 0x04b0, 0x0109, 0},
@@ -2192,6 +2196,7 @@ static struct {
 	/* Elijah Parker <mail@timelapseplus.com> */
 	{"Canon:EOS R",          		0x04a9, 0x32da, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
+    
 	/* Christian Muehlhaeuser <muesli@gmail.com> */
 	{"Canon:EOS 2000D",			0x04a9, 0x32e1, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
 
@@ -2200,6 +2205,8 @@ static struct {
 
 	/* from timelapse-VIEW */
 	{"Canon:EOS R2",          		0x04a9, 0x32e2, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
+
+    {"Canon:EOS R5",            0x04a9, 0x32f4, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
@@ -4372,6 +4379,26 @@ camera_sony_capture (Camera *camera, CameraCaptureType type, CameraFilePath *pat
 	PTPDevicePropDesc	dpd;
 	struct timeval	event_start;
 
+    if (params->deviceinfo.Model && (
+         !strcmp(params->deviceinfo.Model, "ZV-1")        ||
+         !strcmp(params->deviceinfo.Model, "DSC-RX100M7")
+     )) {
+         /* For some as yet unknown reason the ZV-1 needs around 3 seconds startup time
+          * to be able to capture. I looked for various trigger events or property changes
+          * but nothing worked except waiting. */
+         while (time_since (params->starttime) < 2500) {
+             /* drain the queue first */
+             if (ptp_get_one_event(params, &event)) {
+                 GP_LOG_D ("during event.code=%04x Param1=%08x", event.Code, event.Param1);
+                 continue;
+             }
+             /* wait for events and poll property data */
+             C_PTP (ptp_check_event (params));
+
+             C_PTP (ptp_sony_getalldevicepropdesc (params)); /* avoid caching */
+         }
+     }
+    
 	C_PTP (ptp_generic_getdevicepropdesc (params, PTP_DPC_CompressionSetting, &dpd));
 
 	GP_LOG_D ("dpd.CurrentValue.u8 = %x", dpd.CurrentValue.u8);
