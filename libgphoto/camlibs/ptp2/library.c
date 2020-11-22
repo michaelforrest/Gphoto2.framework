@@ -1119,6 +1119,8 @@ static struct {
 
     {"Sony:ILCE-6600 (PC Control)",        0x054c, 0x0d10, PTP_CAP|PTP_CAP_PREVIEW},
 
+    {"Sony:ILCE-6100 (PC Control)",        0x054c, 0x0d14, PTP_CAP|PTP_CAP_PREVIEW},
+
     /* Mikael Ståldal <mikael@staldal.nu> */
 	{"Sony:DSC-RX100M5A (MTP)",		0x054c, 0x0cb1, 0},
 	{"Sony:DSC-RX100M5A (PC Control)",	0x054c, 0x0cb2, PTP_CAP|PTP_CAP_PREVIEW},
@@ -1311,6 +1313,9 @@ static struct {
 	 * vendor commands? yeah right... */
 	{"Nikon:Coolpix P520 (PTP mode)", 0x04b0, 0x0228, 0}, /* PTP_CAP */
 
+    /* checamon <checamon@gmail.com> */
+     {"Nikon:Coolpix B700 (PTP mode)", 0x04b0, 0x0231, PTP_CAP|PTP_CAP_PREVIEW},
+    
 	/* Nikon Coolpix 2000 */
 	{"Nikon:Coolpix 2000 (PTP mode)", 0x04b0, 0x0302, 0},
 	/* From IRC reporter. */
@@ -1520,6 +1525,12 @@ static struct {
 	/* Schreiber, Steve via Gphoto-devel */
 	{"Nikon:DSC D3500",		  0x04b0, 0x0445, PTP_CAP|PTP_CAP_PREVIEW},
 
+    /* Thomas Schaad */
+     {"Nikon:Z5",                      0x04b0, 0x0448, PTP_CAP|PTP_CAP_PREVIEW},
+
+     /* Thomas Schaad <tom@avisec.ch> */
+     {"Nikon:Z6_2",                      0x04b0, 0x044c, PTP_CAP|PTP_CAP_PREVIEW},
+    
 	/* http://sourceforge.net/tracker/?func=detail&aid=3536904&group_id=8874&atid=108874 */
 	{"Nikon:V1",    		  0x04b0, 0x0601, PTP_CAP|PTP_NIKON_1},
 	/* https://sourceforge.net/tracker/?func=detail&atid=358874&aid=3556403&group_id=8874 */
@@ -2075,9 +2086,9 @@ static struct {
 	/* https://github.com/gphoto/libgphoto2/issues/92 */
 	{"Canon:EOS 5D Mark IV",		0x04a9, 0x3281, PTP_CAP|PTP_CAP_PREVIEW|PTP_DONT_CLOSE_SESSION},
 
-	/* Marcus parents */
-	{"Canon:PowerShot SX600 HS",		0x04a9, 0x3286, PTPBUG_DELETE_SENDS_EVENT},
-
+    {"Canon:PowerShot SX600 HS",        0x04a9, 0x3286, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
+    
+    
 	/* https://sourceforge.net/p/gphoto/feature-requests/445/ */
 	{"Canon:PowerShot Elph135",		0x04a9, 0x3288, PTPBUG_DELETE_SENDS_EVENT},
 
@@ -2188,7 +2199,7 @@ static struct {
 	{"Canon:Digital IXUS 185",          	0x04a9, 0x32d4, 0},
 
 	/* Slavko Kocjancic <eslavko@gmail.com> */
-	{"Canon:Digital PowerShot SX730IS",	0x04a9, 0x32d6, PTP_CAP|PTP_CAP_PREVIEW},
+	{"Canon:Digital PowerShot SX730HS",	0x04a9, 0x32d6, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Jasem Mutlaq <mutlaqja@ikarustech.com> */
 	{"Canon:EOS 4000D",			0x04a9, 0x32d9, PTP_CAP|PTP_CAP_PREVIEW|PTPBUG_DELETE_SENDS_EVENT},
@@ -2208,6 +2219,10 @@ static struct {
 
     {"Canon:EOS R5",            0x04a9, 0x32f4, PTP_CAP|PTP_CAP_PREVIEW},
 
+    /* Steve Rencontre <steve@rsn-tech.co.uk> */
+     {"Canon:EOS R6",            0x04a9, 0x32f5, PTP_CAP|PTP_CAP_PREVIEW},
+
+    
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -3678,7 +3693,7 @@ camera_nikon_capture (Camera *camera, CameraCaptureType type, CameraFilePath *pa
 
 	/* if in liveview mode, we have to run non-af capture */
 	params->inliveview = 0;
-	if (ptp_property_issupported (params, PTP_DPC_NIKON_LiveViewStatus)) {
+	if (ptp_property_issupported (params, PTP_DPC_NIKON_LiveViewStatus) && ptp_operation_issupported(params,PTP_OC_NIKON_StartLiveView)) {
 		ret = ptp_getdevicepropvalue (params, PTP_DPC_NIKON_LiveViewStatus, &propval, PTP_DTC_UINT8);
 		if (ret == PTP_RC_OK)
 			params->inliveview = propval.u8;
@@ -4381,7 +4396,8 @@ camera_sony_capture (Camera *camera, CameraCaptureType type, CameraFilePath *pat
 
     if (params->deviceinfo.Model && (
          !strcmp(params->deviceinfo.Model, "ZV-1")        ||
-         !strcmp(params->deviceinfo.Model, "DSC-RX100M7")
+         !strcmp(params->deviceinfo.Model, "DSC-RX100M7")	||
+ 		 !strcmp(params->deviceinfo.Model, "ILCE-7RM4")
      )) {
          /* For some as yet unknown reason the ZV-1 needs around 3 seconds startup time
           * to be able to capture. I looked for various trigger events or property changes
@@ -8796,6 +8812,8 @@ camera_init (Camera *camera, GPContext *context)
 				int mode = 0x15;	/* default for EOS M and newer Powershot SX */
 
                 if (!strcmp(params->deviceinfo.Model,"Canon EOS M6 Mark II")) mode = 0x1;
+                 if (!strcmp(params->deviceinfo.Model,"Canon PowerShot SX720 HS")) mode = 0x11;
+                 if (!strcmp(params->deviceinfo.Model,"Canon PowerShot SX600 HS")) mode = 0x11;
                 
 				/* according to reporter only needed in config.c part 
 				if (!strcmp(params->deviceinfo.Model,"Canon PowerShot G5 X")) mode = 0x11;
