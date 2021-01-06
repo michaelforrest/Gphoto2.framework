@@ -1085,6 +1085,10 @@ static struct {
 	/* Andre Crone <andre@elysia.nl>, adjusted */
 	{"Sony:Alpha-A7S II (Control)",		0x054c,0x0a71, PTP_CAP|PTP_CAP_PREVIEW},
 
+    {"Sony:Alpha-A7S III (Control)",        0x054c,0x0d18, PTP_CAP|PTP_CAP_PREVIEW},
+
+    {"Olympus:E-M1 MII",              0x07b4, 0x0135, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* Demo7up <demo7up@gmail.com> */
 	{"Sony:UMC-R10C",			0x054c,0x0a79, 0},
 
@@ -1133,6 +1137,10 @@ static struct {
 
     {"Canon:PowerShot SX70 HS",        0x04a9, 0x32ee, PTP_CAP|PTP_CAP_PREVIEW},
 
+    {"Nikon:Z7_2",                      0x04b0, 0x044b, PTP_CAP|PTP_CAP_PREVIEW},
+
+    {"Fuji:Fujifilm X-S10",            0x04cb, 0x02ea, PTP_CAP_PREVIEW},
+    
 	/* Nikon Coolpix 2500: M. Meissner, 05 Oct 2003 */
 	{"Nikon:Coolpix 2500 (PTP mode)", 0x04b0, 0x0109, 0},
 	/* Nikon Coolpix 5700: A. Tanenbaum, 29 Oct 2002 */
