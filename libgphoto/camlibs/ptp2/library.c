@@ -275,6 +275,15 @@ fixup_cached_deviceinfo (Camera *camera, PTPDeviceInfo *di) {
 		return GP_OK;
 	}
     
+    /* SIGMA FP */
+     if (    (di->VendorExtensionID == PTP_VENDOR_MICROSOFT) &&
+         (camera->port->type == GP_PORT_USB) &&
+         (a.usb_vendor == 0x1003)
+     ) {
+         di->VendorExtensionID = PTP_VENDOR_GP_SIGMAFP;
+         return GP_OK;
+     }
+    
     if (    (di->VendorExtensionID == PTP_VENDOR_MICROSOFT) &&
         (camera->port->type == GP_PORT_USB || camera->port->type == GP_PORT_PTPICC) &&
         (a.usb_vendor == 0x1a98)
@@ -1082,10 +1091,15 @@ static struct {
 	/* Andre Crone <andre@elysia.nl> */
 	{"Sony:DSC-RX100M4",          		0x054c, 0x0a6d, PTP_CAP|PTP_CAP_PREVIEW},
 
+    {"Sony:Alpha-RX1R II (Control)",    0x054c,0x0a70, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* Andre Crone <andre@elysia.nl>, adjusted */
 	{"Sony:Alpha-A7S II (Control)",		0x054c,0x0a71, PTP_CAP|PTP_CAP_PREVIEW},
 
     {"Sony:Alpha-A7S III (Control)",        0x054c,0x0d18, PTP_CAP|PTP_CAP_PREVIEW},
+
+    // Sony a7c
+    {"Sony:ILCE-7C (Control)",        0x054c, 0x0d2b, PTP_CAP|PTP_CAP_PREVIEW},
 
     {"Olympus:E-M1 MII",              0x07b4, 0x0135, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -2229,10 +2243,13 @@ static struct {
 
     {"Canon:EOS R5",            0x04a9, 0x32f4, PTP_CAP|PTP_CAP_PREVIEW},
 
+    /* https://github.com/gphoto/libgphoto2/issues/614 */
+     {"Canon:EOS M200",            0x04a9, 0x32ef, PTP_CAP|PTP_CAP_PREVIEW},
+
     /* Steve Rencontre <steve@rsn-tech.co.uk> */
      {"Canon:EOS R6",            0x04a9, 0x32f5, PTP_CAP|PTP_CAP_PREVIEW},
 
-    
+
 	/* https://github.com/gphoto/libgphoto2/issues/316 */
 	{"Canon:PowerShot SX740 HS",		0x04a9, 0x32e4, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -2356,6 +2373,11 @@ static struct {
 	{"Fuji:Fujifilm X-T2",			0x04cb, 0x02cd, PTP_CAP|PTP_CAP_PREVIEW},
 	/* https://github.com/gphoto/libgphoto2/issues/283 */
 	{"Fuji:Fujifilm X100F",			0x04cb, 0x02d1, 0},
+
+    {"Fuji:Fujifilm X-Pro3",        0x04cb, 0x02e4, PTP_CAP|PTP_CAP_PREVIEW},
+
+    {"Fuji:Fujifilm X100V",            0x04cb, 0x02e5, PTP_CAP_PREVIEW},
+
 	/* https://github.com/gphoto/libgphoto2/issues/133 */
 	{"Fuji:GFX 50 S",			0x04cb, 0x02d3, PTP_CAP|PTP_CAP_PREVIEW},
 	/* https://github.com/gphoto/libgphoto2/issues/170 */
@@ -2374,7 +2396,7 @@ static struct {
 	/* https://github.com/gphoto/gphoto2/issues/256 */
 	{"Fuji:Fujifilm GFX100",		0x04cb, 0x02de, PTP_CAP|PTP_CAP_PREVIEW},
 	/* Bruno Filho at SUSE (currently not working with cpature, but shows variables) */
-	{"Fuji:Fujifilm X-T30",			0x04cb, 0x02e3, 0 /*PTP_CAP|PTP_CAP_PREVIEW*/},
+    {"Fuji:Fujifilm X-T30",            0x04cb, 0x02e3, PTP_CAP_PREVIEW},
 
     {"Fuji:Fujifilm X-T4",            0x04cb, 0x02e6, PTP_CAP|PTP_CAP_PREVIEW},    /* not fully confirmed */
 
@@ -2463,6 +2485,8 @@ static struct {
 
 	/* This is a camera ... reported by TAN JIAN QI <JQTAN1@e.ntu.edu.sg */
 	{"Samsung:EK-GC100",			0x04e8,	0x6866, 0},
+
+    {"Sigma:fp",                0x1003,    0xc432, PTP_CAP_PREVIEW},
 
 	/* Bernhard Wagner <me@bernhardwagner.net> */
 	{"Leica:M9",				0x1a98,	0x0002, PTP_CAP},
@@ -3320,13 +3344,21 @@ enable_liveview:
 	case PTP_VENDOR_SONY: {
 		uint32_t	preview_object = 0xffffc002; /* this is where the liveview image is accessed */
 		unsigned char	*ximage = NULL;
-		int		tries = 20;
+		int		tries = 50;
 
 #if 0
 		/* this times out, with 0.3 seconds wait ... bad */
 		ptp_check_event (params); 	/* will stall for some reason */
 #endif
 		do {
+            PTPObjectInfo oi;
+            /* This state can persist for up to 1 second on the ZV-1 */
+            ret = ptp_getobjectinfo(params, preview_object, &oi);
+            if (ret == PTP_RC_InvalidObjectHandle) {
+                usleep(50*1000);
+                continue;
+            }
+            
 			ret = ptp_getobject_with_size(params, preview_object, &ximage, &size);
 			if (ret == PTP_RC_OK)
 				break;
@@ -3335,8 +3367,19 @@ enable_liveview:
 			usleep(10*1000);
 		} while (tries--);
 
+        jpgStartPtr = ximage;
+         /* There is an initial blob, and we had a case where 0xff 0xd8 was in the initial blob
+          * https://github.com/gphoto/gphoto2/issues/389
+          * as the data starts with an apparent offset into the data to the JPEG, try to use that
+          */
+         if (size > 4) {
+             unsigned int offset = ximage[0] | (ximage[1] << 8) | (ximage[2] << 16) | (ximage[3] << 24);
+             if ((offset+1 < size) && (ximage[offset] == 0xff) && (ximage[offset+1] == 0xd8))
+                 jpgStartPtr = ximage + offset;
+         }
+        
 		/* look for the JPEG SOI marker (0xFFD8) in data */
-		jpgStartPtr = (unsigned char*)memchr(ximage, 0xff, size);
+		jpgStartPtr = (unsigned char*)memchr(jpgStartPtr, 0xff, size);
 		while(jpgStartPtr && ((jpgStartPtr+3) < (ximage + size))) {
 			if(*(jpgStartPtr + 1) == 0xd8 && *(jpgStartPtr + 2) == 0xff && (*(jpgStartPtr + 3) == 0xdb || *(jpgStartPtr + 3) == 0xe0 || *(jpgStartPtr + 3) == 0xe1)) { /* SOI found */
 				break;
@@ -3533,6 +3576,37 @@ enable_liveview:
 		SET_CONTEXT_P(params, NULL);
 		return GP_OK;
 	}
+    case PTP_VENDOR_GP_SIGMAFP: {
+ 		unsigned char	*ximage = NULL;
+
+ 		size = 0;
+
+ 		C_PTP (ptp_sigma_fp_liveview_image (params, &ximage, &size));
+ 		if (size < 4) return GP_ERROR;
+
+ 		/* look for the JPEG SOI marker (0xFFD8) in data */
+ 		jpgStartPtr = (unsigned char*)memchr(ximage, 0xff, size);
+ 		while(jpgStartPtr && ((jpgStartPtr+1) < (ximage + size))) {
+ 			if(*(jpgStartPtr + 1) == 0xd8) { /* SOI found */
+ 				break;
+ 			} else { /* go on looking (starting at next byte) */
+ 				jpgStartPtr++;
+ 				jpgStartPtr = (unsigned char*)memchr(jpgStartPtr, 0xff, ximage + size - jpgStartPtr);
+ 			}
+ 		}
+ 		if(!jpgStartPtr) { /* no SOI -> no JPEG */
+ 			gp_context_error (context, _("Sorry, your Panasonic camera does not seem to return a JPEG image in LiveView mode"));
+ 			return GP_ERROR;
+ 		}
+ 		gp_file_append (file, (char*)jpgStartPtr, size - (jpgStartPtr-ximage));
+ 		free (ximage);
+
+ 		gp_file_set_mime_type (file, GP_MIME_JPEG);
+ 		gp_file_set_name (file, "preview.jpg");
+ 		gp_file_set_mtime (file, time(NULL));
+ 		SET_CONTEXT_P(params, NULL);
+ 		return GP_OK;
+ 	}
             
 	default:
 		break;
@@ -4407,7 +4481,10 @@ camera_sony_capture (Camera *camera, CameraCaptureType type, CameraFilePath *pat
     if (params->deviceinfo.Model && (
          !strcmp(params->deviceinfo.Model, "ZV-1")        ||
          !strcmp(params->deviceinfo.Model, "DSC-RX100M7")	||
- 		 !strcmp(params->deviceinfo.Model, "ILCE-7RM4")
+ 		 !strcmp(params->deviceinfo.Model, "ILCE-7RM4") ||
+         !strcmp(params->deviceinfo.Model, "DSC-RX0M2") ||
+         !strcmp(params->deviceinfo.Model, "ILCE-7C")
+
      )) {
          /* For some as yet unknown reason the ZV-1 needs around 3 seconds startup time
           * to be able to capture. I looked for various trigger events or property changes
@@ -5085,9 +5162,10 @@ fallback:
 	 * indicating that the capure has been completed may occur after
 	 * few seconds. moving down the code. (kil3r)
 	 */
-	C_PTP_REP (ptp_initiatecapture(params, 0x00000000, 0x00000000));
 	CR (gp_port_set_timeout (camera->port, capture_timeout));
-	/* A word of comments is worth here.
+    C_PTP_REP (ptp_initiatecapture(params, 0x00000000, 0x00000000));
+
+    /* A word of comments is worth here.
 	 * After InitiateCapture camera should report with ObjectAdded event
 	 * all newly created objects. However there might be more than one
 	 * newly created object. There a two scenarios here, which may occur
@@ -8866,7 +8944,16 @@ camera_init (Camera *camera, GPContext *context)
 	case PTP_VENDOR_FUJI:
 		CR (camera_prepare_capture (camera, context));
 		break;
-	default:
+        case PTP_VENDOR_GP_SIGMAFP:
+ 		if (ptp_operation_issupported(params, 0x9035)) {
+ 			unsigned char *xdata = NULL;
+ 			unsigned int xsize = 0;
+ 			C_PTP (ptp_sigma_fp_9035 (params, &xdata, &xsize));
+ 			GP_LOG_DATA ((char*)xdata, xsize, "9035 output");
+ 			free (xdata);
+ 		}
+ 		break;
+    default:
 		break;
 	}
 
