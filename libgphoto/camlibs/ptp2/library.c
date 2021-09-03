@@ -992,6 +992,8 @@ static struct {
 	/* Thorsten Ludewig <t.ludewig@gmail.com> */
 	{"Sony:Alpha-A3000",	      0x054c, 0x074e, 0},
 
+    {"Sony:Alpha-A6600 (PC Control)",    0x054c, 0x0d10, PTP_CAP|PTP_CAP_PREVIEW},
+
 	/* bertrand.chambon@free.fr */
 	{"Sony:Alpha-A68 (MTP)",      0x054c, 0x0779, 0},
 	/* https://github.com/gphoto/libgphoto2/issues/70 */
@@ -1145,6 +1147,7 @@ static struct {
 
     //test
     {"Sony:ZV-1",    0x054c, 0x0c44, PTP_CAP|PTP_CAP_PREVIEW},
+    {"Sony:ZV-E10",    0x054c, 0x0d97, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Elijah Parker, mail@timelapseplus.com */
 	{"Sony:DSC-A7r IV (Control)",		0x054c, 0x0ccc, PTP_CAP|PTP_CAP_PREVIEW},
@@ -2399,6 +2402,9 @@ static struct {
     {"Fuji:Fujifilm X-T30",            0x04cb, 0x02e3, PTP_CAP_PREVIEW},
 
     {"Fuji:Fujifilm X-T4",            0x04cb, 0x02e6, PTP_CAP|PTP_CAP_PREVIEW},    /* not fully confirmed */
+
+    {"Fuji:Fujifilm GFX 100S",        0x04cb, 0x02ea, PTP_CAP|PTP_CAP_PREVIEW},
+    {"Fuji:Fujifilm GFX 100S (2nd)",    0x04cb, 0x02e9, PTP_CAP|PTP_CAP_PREVIEW},
 
 	{"Ricoh:Caplio R5 (PTP mode)",          0x05ca, 0x0110, 0},
 	{"Ricoh:Caplio GX (PTP mode)",          0x05ca, 0x0325, 0},
@@ -4480,6 +4486,7 @@ camera_sony_capture (Camera *camera, CameraCaptureType type, CameraFilePath *pat
 
     if (params->deviceinfo.Model && (
          !strcmp(params->deviceinfo.Model, "ZV-1")        ||
+         !strcmp(params->deviceinfo.Model, "ZV-E10")        ||
          !strcmp(params->deviceinfo.Model, "DSC-RX100M7")	||
  		 !strcmp(params->deviceinfo.Model, "ILCE-7RM4") ||
          !strcmp(params->deviceinfo.Model, "DSC-RX0M2") ||
