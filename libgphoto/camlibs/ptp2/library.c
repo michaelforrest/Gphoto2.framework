@@ -1152,6 +1152,8 @@ static struct {
 	/* Elijah Parker, mail@timelapseplus.com */
 	{"Sony:DSC-A7r IV (Control)",		0x054c, 0x0ccc, PTP_CAP|PTP_CAP_PREVIEW},
 
+    {"Sony:DSC-A7S III (Control)",        0x054c, 0x0d18, PTP_CAP|PTP_CAP_PREVIEW},
+
     {"Canon:PowerShot SX70 HS",        0x04a9, 0x32ee, PTP_CAP|PTP_CAP_PREVIEW},
 
     {"Nikon:Z7_2",                      0x04b0, 0x044b, PTP_CAP|PTP_CAP_PREVIEW},
@@ -1540,6 +1542,8 @@ static struct {
 
 	/* Horshack ?? <horshack@live.com> */
 	{"Nikon:Z7",                	  0x04b0, 0x0442, PTP_CAP|PTP_CAP_PREVIEW},
+
+    {"Nikon:Z7_2",                      0x04b0, 0x044b, PTP_CAP|PTP_CAP_PREVIEW},
 
 	/* Marcus Meissner */
 	{"Nikon:Z6",                	  0x04b0, 0x0443, PTP_CAP|PTP_CAP_PREVIEW},
