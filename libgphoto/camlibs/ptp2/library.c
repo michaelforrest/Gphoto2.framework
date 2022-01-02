@@ -1149,7 +1149,12 @@ static struct {
     {"Sony:ZV-1",    0x054c, 0x0c44, PTP_CAP|PTP_CAP_PREVIEW},
     {"Sony:ZV-E10",    0x054c, 0x0d97, PTP_CAP|PTP_CAP_PREVIEW},
 
-	/* Elijah Parker, mail@timelapseplus.com */
+    {"Sony:ILCE-7RM3A (PC Control)",    0x054c, 0x0d9b, PTP_CAP|PTP_CAP_PREVIEW},
+
+         /* https://github.com/gphoto/libgphoto2/issues/749 */
+    {"Sony:ILCE-7RM4A (PC Control)",    0x054c, 0x0d9f, PTP_CAP|PTP_CAP_PREVIEW},
+	
+    /* Elijah Parker, mail@timelapseplus.com */
 	{"Sony:DSC-A7r IV (Control)",		0x054c, 0x0ccc, PTP_CAP|PTP_CAP_PREVIEW},
 
     {"Sony:DSC-A7S III (Control)",        0x054c, 0x0d18, PTP_CAP|PTP_CAP_PREVIEW},
@@ -1556,6 +1561,8 @@ static struct {
 
     /* Thomas Schaad */
      {"Nikon:Z5",                      0x04b0, 0x0448, PTP_CAP|PTP_CAP_PREVIEW},
+
+     {"Nikon:Zfc",                     0x04b0, 0x044f, PTP_CAP|PTP_CAP_PREVIEW},
 
      /* Thomas Schaad <tom@avisec.ch> */
      {"Nikon:Z6_2",                      0x04b0, 0x044c, PTP_CAP|PTP_CAP_PREVIEW},
