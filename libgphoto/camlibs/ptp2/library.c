@@ -2443,6 +2443,8 @@ static struct {
 
     {"Nikon:DSC D780",          0x04b0, 0x0446, PTP_CAP|PTP_CAP_PREVIEW},
   
+    {"Nikon:DSC D6",          0x04b0, 0x0447, PTP_CAP|PTP_CAP_PREVIEW},
+    
      {"Panasonic:DMC-GX8",             0x04da, 0x2374, PTP_CAP|PTP_CAP_PREVIEW},
     
 	/* Arda Kaan <ardakaan@gmail.com> */
