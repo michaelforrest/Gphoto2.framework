@@ -1129,6 +1129,8 @@ static struct {
 	{"Sony:Alpha-A7r III (PC Control)",	0x054c, 0x0c33, PTP_CAP|PTP_CAP_PREVIEW}, /* FIXME: crosscheck */
 	{"Sony:Alpha-A7 III (PC Control)",	0x054c, 0x0c34, PTP_CAP|PTP_CAP_PREVIEW}, /* FIXME: crosscheck */
 
+    {"Sony:Alpha-A7 IV (PC Control)",    0x054c, 0x0da7, PTP_CAP|PTP_CAP_PREVIEW},
+    
 	/* jackden@gmail.com */
 	{"Sony:DSC-RX100M6 (PC Control)",  	0x054c, 0x0c38, PTP_CAP|PTP_CAP_PREVIEW},
 
@@ -1424,6 +1426,8 @@ static struct {
 
 	/* Krystal Puga <krystalvp@gmail.com> */
 	{"Nikon:KeyMission 170", 	  0x04b0, 0x0364, PTP_CAP},
+
+    {"Nikon:P950",                 0x04b0, 0x036d, PTP_CAP|PTP_CAP_PREVIEW|PTP_NIKON_BROKEN_CAP},
 
 	/* Nikon D100 has a PTP mode: westin 2002.10.16 */
 	{"Nikon:DSC D100 (PTP mode)",     0x04b0, 0x0402, 0},
