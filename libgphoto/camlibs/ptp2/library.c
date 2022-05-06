@@ -3088,7 +3088,7 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 
 			/* do not set it everytime, it will cause delays */
 			ret = ptp_canon_eos_getdevicepropdesc (params, PTP_DPC_CANON_EOS_EVFMode, &dpd);
-			if ((ret == PTP_RC_OK) && (dpd.CurrentValue.u16 != 1)) {
+			if ((ret == PTP_RC_OK) && (dpd.CurrentValue.u16 != 1) && (dpd.CurrentValue.u16 != 2)) { // dunno sometimes this is 2
 				/* 0 means off, 1 means on */
 				val.u16 = 1;
 				ret = ptp_canon_eos_setdevicepropvalue (params, PTP_DPC_CANON_EOS_EVFMode, &val, PTP_DTC_UINT16);
@@ -3103,7 +3103,7 @@ camera_capture_preview (Camera *camera, CameraFile *file, GPContext *context)
 				/* 2 means PC, 1 means TFT */
 				val.u32 = 2;
 				C_PTP_MSG (ptp_canon_eos_setdevicepropvalue (params, PTP_DPC_CANON_EOS_EVFOutputDevice, &val, PTP_DTC_UINT32),
-					   "setval of evf outputmode to 2 failed (curval is %d)!", dpd.CurrentValue.u32);
+					   "setval of evf outputdevice  to 2 failed (curval is %d)!", dpd.CurrentValue.u32);
 			}
 			ptp_free_devicepropdesc (&dpd);
 
